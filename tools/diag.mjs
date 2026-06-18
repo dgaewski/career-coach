@@ -1,0 +1,14 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+const errs = [];
+page.on("console", m => { if (m.type() === "error") errs.push(m.text()); });
+page.on("pageerror", e => errs.push("PAGEERROR: " + e.message));
+await page.goto("http://localhost:4280/", { waitUntil: "load", timeout: 30000 });
+await page.waitForTimeout(4000);
+const txt = (await page.evaluate(() => document.body.innerText || "")).trim();
+console.log("body innerText length:", txt.length);
+console.log("first 300 chars:", JSON.stringify(txt.slice(0, 300)));
+console.log("console errors (" + errs.length + "):");
+errs.slice(0, 8).forEach(e => console.log("  - " + e));
+await browser.close();

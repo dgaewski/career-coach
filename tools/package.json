@@ -1,0 +1,50 @@
+{
+  "name": "career-coach-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "index": "tsx indexer/src/index.ts",
+    "coach": "tsx server/src/main.ts",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p dashboard/tsconfig.json",
+    "dash": "vite --config dashboard/vite.config.ts",
+    "dash:build": "vite build --config dashboard/vite.config.ts",
+    "checklinks": "node checklinks.mjs"
+  },
+  "dependencies": {
+    "@fastify/static": "^8.3.0",
+    "chokidar": "^4.0.3",
+    "fast-glob": "^3.3.2",
+    "fastify": "^5.8.5",
+    "gray-matter": "^4.0.3",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "marked": "^14.1.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1",
+    "react-leaflet-cluster": "^3.1.1",
+    "react-router-dom": "^6.30.4",
+    "react-virtualized-auto-sizer": "^2.0.3",
+    "react-window": "^1.8.11",
+    "recharts": "^2.15.4"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/leaflet": "^1.9.21",
+    "@types/leaflet.markercluster": "^1.5.6",
+    "@types/node": "^20.19.43",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@types/react-window": "^1.8.8",
+    "@vitejs/plugin-react": "^4.7.0",
+    "jsdom": "^25.0.1",
+    "playwright": "^1.60.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.5.0",
+    "vite": "^6.4.3",
+    "vitest": "^2.1.0"
+  }
+}

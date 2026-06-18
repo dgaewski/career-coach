@@ -1,0 +1,23 @@
+{
+  "stalenessDays": 45,
+  "fitWeights": { "skills": 0.5, "geo": 0.2, "level": 0.15, "track": 0.15 },
+  "fitTiers": { "excellent": 80, "good": 60, "stretch": 40 },
+  "levelScores": { "entry": 1.0, "early": 1.0, "mid": 0.6, "senior": 0.2, "unknown": 0.7 },
+  "demandTiers": { "highDemand": 0.25, "common": 0.10, "occasional": 0.03 },
+  "salarySanityUsd": { "min": 50000, "max": 250000 },
+  "keywordWeight": 0.5,
+  "relatedHave": { "ros2": { "ros": 0.5 } },
+  "fitTuning": {
+    "tierWeights": { "high-demand": 1.0, "common": 0.7, "occasional": 0.5, "rare": 0.4 },
+    "shrinkK": 2,
+    "depthBonusPer": 0.04,
+    "depthBonusCap": 0.12
+  },
+  "penalties": { "belowFloor": 0.10, "clearanceRisk": 0.12, "workAuthRisk": 0.12 },
+  "pivotBoost": 1.2,
+  "clearanceSignals": {
+    "clearanceKeywords": ["secret clearance"],
+    "workAuthKeywords": ["U.S. citizenship", "ITAR"],
+    "companies": ["Anduril"]
+  }
+}
