@@ -4,7 +4,7 @@
 
 > **First run (new instance):** If `USER.md` still has an empty `name:`, this is a freshly-cloned, unconfigured instance. Greet the user and tell them to run **`/setup`** — the onboarding command that installs dependencies, reads their résumé, calibrates `USER.md`, builds the first dashboard, and offers a private backup. Do **not** improvise onboarding or hand-write `USER.md` / `coach/Profile.md` yourself — `/setup` is the structured flow. (It's user-invoked, so you can't auto-run it; just have them type `/setup`.)
 
-> **Resuming development work** (building the server/dashboard, executing plans)? Read `docs/superpowers/HANDOFF.md` for current build status and how to continue. This manual covers wiki *content* workflows only.
+> **Maintaining the engine?** If this repo has a `docs/superpowers/` folder (the template's own dev repo), start there — `HANDOFF.md` for build status and `MAINTAINING.md` for the publish/update runbook. Cloned instances won't have it; this manual covers your wiki content workflows.
 
 ## The user (calibrates everything)
 
@@ -27,7 +27,7 @@ The indexer reads this instance's calibration from `USER.md` — tracks, geo-zon
 - Filenames: Title Case with spaces. Job pages: `<Company> — <Title>.md` (em dash), disambiguate with city or date if needed.
 - Internal links `[[Page Name]]`; external links standard markdown. Link liberally; a link to a not-yet-written page marks a gap.
 - All wiki pages carry frontmatter with at least `type`, `created`, `updated`.
-- The user-facing command layer is complete: all 11 commands live in `.claude/skills/<name>/SKILL.md` (prompt templates calibrated by `USER.md`). `/setup` onboards a new instance; `/find-jobs`, `/add-job`, `/coach`, `/update-resume`, and `/lint` wrap the documented workflows (Ingest batch / Manual drop / Coaching session / Profile update / Lint); `/status`, `/backup`, `/help`, `/watch`, and `/update` round out the layer.
+- The user-facing command layer lives in `.claude/skills/<name>/SKILL.md` (prompt templates calibrated by `USER.md`). `/setup` onboards a new instance; `/find-jobs`, `/add-job`, `/coach`, `/update-resume`, and `/lint` wrap the documented workflows (Ingest batch / Manual drop / Coaching session / Profile update / Lint); `/status`, `/backup`, `/help`, `/watch`, and `/update` round out the operational set; and `/why` and `/compare` are decision tools over the indexed fit data.
 
 ## Job page schema (`jobs/`)
 

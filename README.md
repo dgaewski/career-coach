@@ -24,6 +24,8 @@ It runs entirely inside [Claude Code](https://claude.com/claude-code) — a set 
 | `/find-jobs [scope] [count]` | Search real postings across your tracks/regions and ingest them |
 | `/add-job <url\|text>` | Add one posting you paste in |
 | `/coach` | A coaching session grounded in your profile + analytics |
+| `/why <job>` | Why a role scored the way it did — your matching skills, gaps, and flags |
+| `/compare <A> <B>` | Put 2–4 roles side by side to decide where to focus |
 | `/update-resume` | Re-synthesize your profile from a new résumé |
 | `/lint` | Consistency + freshness checks across your wiki |
 | `/watch <category> <cadence>` | Schedule a recurring job search |

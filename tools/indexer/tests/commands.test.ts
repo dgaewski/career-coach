@@ -15,6 +15,8 @@ const commands: { name: string; args: boolean }[] = [
   { name: "find-jobs", args: true },
   { name: "add-job", args: true },
   { name: "coach", args: true },
+  { name: "why", args: true },
+  { name: "compare", args: true },
   { name: "update-resume", args: false },
   { name: "lint", args: false },
   { name: "status", args: false },

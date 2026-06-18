@@ -18,6 +18,8 @@ You are running **/help**. List the available commands in plain language, groupe
 **Understanding & deciding**
 - `/status` — a quick snapshot of your pipeline, new fits, and top gaps.
 - `/coach [topic]` — talk through strategy, priorities, gaps, applications, negotiation.
+- `/why <job>` — why a specific role scored the way it did (your matching skills, gaps, flags).
+- `/compare <A> <B>` — put 2–4 roles side by side to decide where to focus.
 
 **Keeping things current**
 - `/update-resume` — refresh your profile from a new résumé.
