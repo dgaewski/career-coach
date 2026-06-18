@@ -47,12 +47,15 @@ Finally, make sure `geo/places.json` exists; if it doesn't, create it containing
 2. Tell them how to open the dashboard: run `npm run coach` in `tools/`, then open **http://localhost:4280** in a browser. Offer to start it for them in the background; otherwise give them the one command.
 3. Point them at the next step: "Run `/find-jobs` to start finding roles."
 
-## Phase 4 — Back up your data (optional, private)
-Offer to back up their wiki to a **private** GitHub repo. Be explicit: *"This repo holds your personal career data. I'll create it **private** — it must never be public."*
+## Phase 4 — Connect to GitHub (updates + optional backup)
+First, **wire engine updates.** Run `git remote -v`:
+- If an `origin` remote exists **and there is no `upstream` yet**, this instance was **cloned from the public template** — rename it so `/update` can pull future engine improvements from it: `git remote rename origin upstream`. (If there's no `origin` — e.g. they downloaded a ZIP — skip this; `/update` can wire it later.)
+
+Then **offer an optional private backup** of their data. Be explicit: *"This repo holds your personal career data. I'll create it **private** — it must never be public."*
 1. Check `gh` is installed and authenticated (`gh auth status`). If not, either guide them through `gh auth login` (they do the browser step) or skip the backup and tell them they can run `/backup` anytime later.
 2. Before any commit, confirm `.gitignore` lists `raw-sources/` and `data/` (it should). Never commit `raw-sources/`.
-3. Create the **private** repo (e.g. `gh repo create <name> --private --source=. --remote=origin`), commit their wiki, and push. Do **not** add an `upstream` remote — that is set up later.
-4. This whole step is optional; if they skip it, they still have a fully working local instance.
+3. Create the **private** repo and set it as `origin`: `gh repo create <name> --private --source=. --remote=origin --push`. (You moved any cloned `origin` to `upstream` above, so `origin` is free for their backup.)
+4. The backup is optional; skipping it still leaves a fully working local instance — and `upstream` is already wired for `/update`.
 
 ## Wrap up
 Tell them what's ready (the dashboard URL; that their profile and calibration are saved) and the two commands they'll use next: `/find-jobs` to find roles, `/coach` for guidance. Keep it short and encouraging.

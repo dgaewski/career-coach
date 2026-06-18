@@ -2,6 +2,8 @@
 
 *Read this first every session. This wiki is a personal career intelligence platform for its owner: job-market intelligence + career coaching. Markdown is the database; you own the prose, scripts own the numbers.*
 
+> **First run (new instance):** If `USER.md` still has an empty `name:`, this is a freshly-cloned, unconfigured instance. Greet the user and tell them to run **`/setup`** — the onboarding command that installs dependencies, reads their résumé, calibrates `USER.md`, builds the first dashboard, and offers a private backup. Do **not** improvise onboarding or hand-write `USER.md` / `coach/Profile.md` yourself — `/setup` is the structured flow. (It's user-invoked, so you can't auto-run it; just have them type `/setup`.)
+
 > **Resuming development work** (building the server/dashboard, executing plans)? Read `docs/superpowers/HANDOFF.md` for current build status and how to continue. This manual covers wiki *content* workflows only.
 
 ## The user (calibrates everything)

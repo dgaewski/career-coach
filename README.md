@@ -12,7 +12,7 @@ It runs entirely inside [Claude Code](https://claude.com/claude-code) — a set 
 ## Getting started (no terminal experience needed)
 
 1. **Install Claude Code** — follow the instructions at claude.com/claude-code.
-2. **Get this repo** — download the ZIP and unzip it (or let Claude clone it for you).
+2. **Get this repo** — let Claude clone it for you (or `git clone` it). A ZIP download also works, but cloning is better: it keeps the link that lets `/update` pull future improvements.
 3. **Open the folder in Claude Code.**
 4. **Type `/setup`.** The agent installs dependencies, reads your résumé, asks a few questions to calibrate your search, builds your first dashboard, and offers to create a private backup repo. That's it.
 
