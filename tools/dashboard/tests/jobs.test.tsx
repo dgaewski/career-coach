@@ -1,15 +1,10 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import Jobs from "../src/views/Jobs.js";
 import { renderAt, mockFetch } from "./helpers.js";
 import { JOB_A, JOBS, SKILLS } from "./fixtures.js";
-
-vi.mock("react-virtualized-auto-sizer", () => ({
-  AutoSizer: ({ renderProp }: { renderProp: (s: { width: number; height: number }) => unknown }) =>
-    renderProp({ width: 1000, height: 2000 }),
-}));
 
 describe("Jobs", () => {
   it("lists jobs, shows the filtered count, and links cards to detail", async () => {

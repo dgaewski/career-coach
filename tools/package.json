@@ -26,8 +26,6 @@
     "react-leaflet": "^4.2.1",
     "react-leaflet-cluster": "^3.1.1",
     "react-router-dom": "^6.30.4",
-    "react-virtualized-auto-sizer": "^2.0.3",
-    "react-window": "^1.8.11",
     "recharts": "^2.15.4"
   },
   "devDependencies": {
@@ -38,7 +36,6 @@
     "@types/node": "^20.19.43",
     "@types/react": "^18.3.31",
     "@types/react-dom": "^18.3.7",
-    "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^4.7.0",
     "jsdom": "^25.0.1",
     "playwright": "^1.60.0",

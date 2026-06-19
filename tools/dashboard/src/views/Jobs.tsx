@@ -1,7 +1,5 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
-import { FixedSizeList } from "react-window";
-import { AutoSizer } from "react-virtualized-auto-sizer";
 import { useData } from "../hooks/useData.js";
 import type { Job, Skill, LinksMap, Summary } from "../lib/types.js";
 import { LEVELS, APP_STATUSES } from "../lib/types.js";
@@ -137,37 +135,17 @@ export default function Jobs(): JSX.Element {
     [allJobs],
   );
 
-  // Collapse the page header once the list is scrolled, to hand its space to the filter + cards.
-  const [condensed, setCondensed] = useState(false);
-  // Forward wheel events from anywhere on the page (header/filter/gaps) into the virtualized list,
-  // so scrolling isn't limited to hovering directly over the cards.
-  const outerRef = useRef<HTMLDivElement>(null);
-  const onPageWheel = (e: React.WheelEvent): void => {
-    const outer = outerRef.current;
-    if (!outer || outer.contains(e.target as Node)) return;   // over the list itself → let it scroll natively
-    outer.scrollTop += e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY;
-  };
-
   if (jobs.loading) return <p className="muted">Loading…</p>;
   if (jobs.error) return <p>Failed to load jobs: {jobs.error}</p>;
 
   return (
-    // Full-height flex column: fills from below the nav to the true bottom edge.
-    // marginBottom cancels main's 64px bottom padding so the list reaches the page bottom
-    // (no body scroll); the list flexes to fill whatever the header/filter leave.
-    <div onWheel={onPageWheel} style={{
-      animation: "ccfade .4s ease both",
-      display: "flex", flexDirection: "column",
-      height: "calc(100vh - 86px)", marginBottom: -64,
-    }}>
-      {/* ── Header (collapses once the list is scrolled, to maximize room) ── */}
+    // Natural page scroll (like every other view): the body scrolls under the sticky nav.
+    // No inner scroll container, no virtualization — the title scrolls away to reclaim space
+    // and the filter bar stays put via position:sticky.
+    <div style={{ animation: "ccfade .4s ease both" }}>
+      {/* ── Header — scrolls away with the page ── */}
       <div style={{
-        flexShrink: 0,
-        overflow: "hidden",
-        maxHeight: condensed ? 0 : 92,
-        opacity: condensed ? 0 : 1,
-        marginBottom: condensed ? 0 : 18,
-        transition: "max-height .25s ease, opacity .2s ease, margin-bottom .25s ease",
+        marginBottom: 18,
         display: "flex",
         alignItems: "flex-end",
         justifyContent: "space-between",
@@ -195,14 +173,23 @@ export default function Jobs(): JSX.Element {
         </div>
       </div>
 
-      {/* ── Filter bar card ── */}
+      {/* ── Filter bar card — sticky just under the nav so it stays reachable while scrolling.
+           The wrapper carries an opaque page-bg band so cards scrolling underneath don't
+           peek through the card's rounded corners. ── */}
       <div style={{
-        flexShrink: 0,
+        position: "sticky",
+        top: 56,
+        zIndex: 5,
+        background: "var(--bg)",
+        paddingTop: 8,
+        marginTop: -8,
+        marginBottom: 16,
+      }}>
+      <div style={{
         background: "var(--card)",
         border: "1px solid var(--line)",
         borderRadius: 16,
         padding: 18,
-        marginBottom: 16,
         boxShadow: "0 1px 2px rgba(28,26,23,.04),0 18px 44px -38px rgba(28,26,23,.4)",
         animation: "ccrise .5s ease both",
         animationDelay: ".05s",
@@ -304,41 +291,21 @@ export default function Jobs(): JSX.Element {
           </div>
         </div>
       </div>
+      </div>
 
-      {/* ── Job cards — virtualized list of rows-of-2; flexes to fill down to the page bottom ── */}
-      {filtered.length > 0 && (() => {
-        const ROW_H = 210;
-        const rows = Math.ceil(filtered.length / 2);
-        return (
-          <div style={{ flex: 1, minHeight: 0 }}>
-            <AutoSizer renderProp={({ width, height }) => (
-              <FixedSizeList
-                outerRef={outerRef}
-                height={height ?? 360}
-                width={width ?? 800}
-                itemCount={rows}
-                itemSize={ROW_H}
-                overscanCount={3}
-                onScroll={({ scrollOffset }) => setCondensed(scrollOffset > 16)}
-              >
-                {({ index, style }) => {
-                  const a = filtered[index * 2], b = filtered[index * 2 + 1];
-                  return (
-                    <div style={{ ...style, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, paddingBottom: 16, boxSizing: "border-box" }}>
-                      {a && <JobCard key={a.id} job={a} linkStatus={links.data?.[a.id]?.status} onChanged={jobs.reload} />}
-                      {b && <JobCard key={b.id} job={b} linkStatus={links.data?.[b.id]?.status} onChanged={jobs.reload} />}
-                    </div>
-                  );
-                }}
-              </FixedSizeList>
-            )} />
-          </div>
-        );
-      })()}
-
-      {filtered.length === 0 && (
+      {/* ── Job cards — plain 2-up grid in the natural page scroll ── */}
+      {filtered.length > 0 ? (
         <div style={{
-          flex: 1,
+          display: "grid",
+          gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+          gap: 16,
+        }}>
+          {filtered.map(j => (
+            <JobCard key={j.id} job={j} linkStatus={links.data?.[j.id]?.status} onChanged={jobs.reload} />
+          ))}
+        </div>
+      ) : (
+        <div style={{
           textAlign: "center",
           color: "var(--muted3)",
           padding: "60px 0",
