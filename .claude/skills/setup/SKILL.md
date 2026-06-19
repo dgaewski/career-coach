@@ -23,9 +23,9 @@ Read `CLAUDE.md` first for the page schemas (job / skill / company / profile / `
 3. From what you learn, write `coach/Profile.md` (a synthesized profile: experience summary, skills-with-evidence, a positioning line) following the `type: profile` schema in `CLAUDE.md`. For each real skill, create or update its `skills/<Skill>.md` page with `have: true` and an `evidence:` line. Never invent experience — use only what they told you.
 
 ## Phase 2 — Calibrate your search (writes USER.md)
-Ask these **core** questions (needed for a working instance), one or two at a time:
+If you read a résumé in Phase 1, **use it to propose answers** below — especially the tracks, plus a starting guess at level and the positioning line — and have them confirm or adjust. Don't make them start from a blank menu. Ask the **core** questions one or two at a time:
 - **Name** — what should the coach call you?
-- **Tracks** — what kinds of roles? (e.g. robotics, software, ai-ml, ee-hardware — or describe your own.)
+- **Tracks** — the kinds of roles or fields they're targeting, written as **their own labels**. This is not a fixed menu — it works for any field. Propose tracks from their résumé and confirm, or just ask. Examples are illustrative and span fields: a software engineer might use `backend`, `ml`; a nurse `icu`, `er`; a designer `product-design`, `brand`.
 - **Where** — your home city/metro, whether remote is OK, and any other metros or regions you'd consider. Turn this into `geo-zones` (their home metro as `home: true`, `remote`, plus any additional metros/regions they name).
 - **Level** — entry, early, mid, or senior? (one or more.)
 

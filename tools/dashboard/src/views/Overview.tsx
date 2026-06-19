@@ -6,6 +6,7 @@ import { InterestButton } from "../components/InterestButton.js";
 import {
   CountUp, GrowBar, Stars, Segmented, Sparkline, Donut, WordCloud,
 } from "../components/primitives.js";
+import { humanizeTrack } from "../lib/vocab.js";
 
 /* ── helpers ── */
 function relativeTime(iso: string): string {
@@ -24,13 +25,6 @@ function tierColor(tier: string): string {
   if (tier === "occasional") return "var(--ink3)";
   return "var(--faint)";
 }
-
-const TRACK_LABELS: Record<string, string> = {
-  robotics: "Robotics",
-  software: "Software",
-  "ai-ml": "AI / ML",
-  "ee-hardware": "EE / Hardware",
-};
 
 /* ── card shell ── */
 const cardStyle: React.CSSProperties = {
@@ -390,7 +384,7 @@ export default function Overview(): JSX.Element {
                   display: "flex", justifyContent: "space-between",
                   fontSize: 13, marginBottom: 5,
                 }}>
-                  <span>{TRACK_LABELS[key] ?? key}</span>
+                  <span>{humanizeTrack(key)}</span>
                   <span style={{
                     fontFamily: "'JetBrains Mono',monospace", color: "var(--muted)",
                   }}>{count}</span>

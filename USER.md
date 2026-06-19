@@ -1,7 +1,7 @@
 ---
 type: user-profile
 name: ""                              # your name
-tracks: []                            # roles to look for: robotics | software | ai-ml | ee-hardware (pick any)
+tracks: []                            # your target tracks — any labels you choose (e.g. backend, ml, product-design, icu)
 level-band: [entry, early]            # which levels are in scope: entry | early | mid | senior
 employment-types: [full-time]         # full-time | co-op | internship | contract
 exclude: []                           # never-ingest domains/keywords (e.g. [power, utility])

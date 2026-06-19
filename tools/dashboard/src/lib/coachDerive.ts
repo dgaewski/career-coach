@@ -1,5 +1,5 @@
 import type { GapEntry, Job, ListedPage } from "./types.js";
-import { TRACK_LABELS } from "./vocab.js";
+import { humanizeTrack } from "./vocab.js";
 
 /** Up to 3 roles to apply to: shortlisted-but-not-applied first, then highest-fit untouched. */
 export function applyPicks(jobs: Job[]): Job[] {
@@ -16,7 +16,7 @@ export function applyPicks(jobs: Job[]): Job[] {
 /** Track readiness rows, sorted high→low, with integer percent. */
 export function readinessRows(tr: Record<string, number> | undefined): { track: string; label: string; pct: number }[] {
   return Object.entries(tr ?? {})
-    .map(([track, frac]) => ({ track, label: TRACK_LABELS[track] ?? track, pct: Math.round(frac * 100) }))
+    .map(([track, frac]) => ({ track, label: humanizeTrack(track), pct: Math.round(frac * 100) }))
     .sort((a, b) => b.pct - a.pct);
 }
 

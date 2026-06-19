@@ -32,7 +32,19 @@ const TRACK_BAR: Record<string, string> = {
   "ee-hardware": "linear-gradient(90deg,#E0902E,#EBA94E)",   // amber
   software:      "linear-gradient(90deg,#159B8A,#27B3A0)",   // teal
 };
-const trackBar = (track: string): string => TRACK_BAR[track] ?? "linear-gradient(90deg,#7A53F2,#9B6BF0)";
+const TRACK_PALETTE = [
+  "linear-gradient(90deg,#7A53F2,#9B6BF0)", // violet
+  "linear-gradient(90deg,#D6409F,#E861B0)", // magenta
+  "linear-gradient(90deg,#E0902E,#EBA94E)", // amber
+  "linear-gradient(90deg,#159B8A,#27B3A0)", // teal
+  "linear-gradient(90deg,#3E7BEA,#5C95F2)", // blue
+  "linear-gradient(90deg,#C7503B,#DA6A55)", // rust
+];
+const trackBar = (track: string): string => {
+  if (TRACK_BAR[track]) return TRACK_BAR[track];
+  let h = 0; for (let i = 0; i < track.length; i++) h = (h * 31 + track.charCodeAt(i)) >>> 0;
+  return TRACK_PALETTE[h % TRACK_PALETTE.length];
+};
 
 // ─── Status colour for portfolio project status badge ────────────────────────
 const STATUS_TONE: Record<string, { bg: string; fg: string }> = {

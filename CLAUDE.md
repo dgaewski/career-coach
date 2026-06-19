@@ -12,6 +12,8 @@ All per-user calibration lives in **`USER.md`** (repo root): `name`, target `tra
 
 The indexer reads this instance's calibration from `USER.md` — tracks, geo-zones, level band, employment types, exclusions, pivot, and the optional comp/clearance signals. Nothing about the user is hardcoded here; read `USER.md` to see who this instance serves.
 
+**Tracks are user-defined labels** (any field — e.g. `backend`, `icu`, `brand`, `robotics`); the engine treats them generically. The track/skill examples and the domain rules throughout this manual (notably the ROS and clearance rules in the Ingest workflow, and skill examples like `fpga-tools`/`can-bus`) are **illustrative for an engineering user** — adapt them to the user's actual field.
+
 ## Ownership rules (hard lines)
 
 - `raw-sources/` is **immutable**. Resumes are versioned (`Resume YYYY-MM.pdf`), never replaced.
@@ -39,7 +41,7 @@ company: Boston Dynamics            # must match a companies/ page name
 location: Waltham, MA
 address: "100 Beaver St, Waltham, MA 02453"   # optional; verbatim when shown
 geo: boston-metro                   # must match a USER.md zone slug, or remote | other
-track: [robotics, software]         # 1+ of: robotics | software | ai-ml | ee-hardware
+track: [robotics, software]         # 1+ of the user's USER.md `tracks` (user-defined labels; values here are just an example)
 level: early                        # entry | early | mid | senior | unknown
 salary: "$95k–$120k"                # optional; verbatim
 url: https://...                    # CANONICAL posting URL only (dedup key); leave "" if unresolved

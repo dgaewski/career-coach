@@ -7,7 +7,8 @@ const cap = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1);
 export const TRACK_LABELS: Record<string, string> = {
   "robotics": "Robotics", "software": "Software", "ai-ml": "AI / ML", "ee-hardware": "EE / Hardware",
 };
-export const humanizeTrack = (s: string): string => TRACK_LABELS[s] ?? cap(s);
+const titleCase = (s: string): string => s.split(/[-_\s]+/).filter(Boolean).map(cap).join(" ");
+export const humanizeTrack = (s: string): string => TRACK_LABELS[s] ?? titleCase(s);
 
 /** Geo filter options: the user's zones (from summary) + remote + other; falls back to the GEOS const. */
 export function geoOptions(summary: Summary | null | undefined): VocabOption[] {
