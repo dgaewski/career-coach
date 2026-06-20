@@ -55,14 +55,12 @@ export interface ChangeSet {
   fitDeclined: { id: string; title: string; from: number; to: number }[];
   staleFlipped: { id: string; title: string }[];
 }
-export interface MomentumSeries { direction: Trend; pct: number; span: string; series: { bucket: string; count: number }[] }
 export interface Overview {
   hero: { activeRoles: number; strongFits: number; inPipeline: number; topMatch: number; topMatchId: string | null };
   pipeline: { interested: number; applied: number; interview: number; offer: number; rejected: number };
   freshness: { fresh: number; recent: number; stale: number };
   fitSpread: { excellent: number; good: number; stretch: number; poor: number };
   demandByTrack: Record<string, number>;
-  momentum: { weekly: MomentumSeries; monthly: MomentumSeries };
   wordCloud: { slug: string; name: string; count: number; tier: string; have: boolean; trend: Trend }[];
   changes: ChangeSet; indexedAt: string;
   trackReadiness?: Record<string, number>;   // track → demand-weighted have-share (0–1)

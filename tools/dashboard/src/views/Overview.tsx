@@ -1,12 +1,12 @@
-import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useData } from "../hooks/useData.js";
-import type { Overview as OverviewData, Summary, Job } from "../lib/types.js";
+import type { Overview as OverviewData, Summary, Job, MarketTrends } from "../lib/types.js";
 import { InterestButton } from "../components/InterestButton.js";
 import {
-  CountUp, GrowBar, Stars, Segmented, Sparkline, Donut, WordCloud,
+  CountUp, GrowBar, Stars, Donut, WordCloud,
 } from "../components/primitives.js";
 import { humanizeTrack, trackColor } from "../lib/vocab.js";
+import { aggregateTrajectory } from "../lib/marketMomentum.js";
 
 /* ── helpers ── */
 function relativeTime(iso: string): string {
@@ -24,6 +24,24 @@ function tierColor(tier: string): string {
   if (tier === "common") return "var(--violet)";
   if (tier === "occasional") return "var(--ink3)";
   return "var(--faint)";
+}
+
+/* market-trajectory display vocab (mirrors the Trends scorecard) */
+const DIR: Record<"rising" | "steady" | "cooling", { label: string; icon: string; color: string }> = {
+  rising:  { label: "Rising",  icon: "↑", color: "var(--green-fg)" },
+  steady:  { label: "Steady",  icon: "→", color: "#5566C8" },
+  cooling: { label: "Cooling", icon: "↓", color: "var(--red-fg, #D8443F)" },
+};
+const TRAJ_ARROW: Record<string, string> = { rising: "↑", steady: "→", cooling: "↓" };
+const STALE_BADGE: Record<string, { label: string; color: string }> = {
+  fresh:   { label: "● fresh", color: "var(--green-fg)" },
+  aging:   { label: "◐ aging", color: "var(--amber-fg, #C98A1E)" },
+  stale:   { label: "○ stale", color: "var(--red-fg, #D8443F)" },
+  unknown: { label: "",        color: "#5566C8" },
+};
+function demandDots(n?: number): string {
+  const v = Math.max(0, Math.min(5, Math.round(n ?? 0)));
+  return "●".repeat(v) + "○".repeat(5 - v);
 }
 
 /* ── card shell ── */
@@ -49,13 +67,13 @@ const PIPE_ORDER = ["interested", "applied", "interview", "offer", "rejected"] a
    OVERVIEW VIEW
    ═══════════════════════════════════════════════════════════════ */
 export default function Overview(): JSX.Element {
-  const [gran, setGran] = useState<"weekly" | "monthly">("weekly");
   const navigate = useNavigate();
 
   const ovRes   = useData<OverviewData>("/api/overview");
   const sumRes  = useData<Summary>("/api/summary");
   const briefRes = useData<import("../lib/types.js").Brief>("/api/brief");
   const jobsRes = useData<Job[]>("/api/jobs");
+  const marketRes = useData<MarketTrends>("/api/market");
 
   if (ovRes.loading || sumRes.loading) {
     return (
@@ -109,14 +127,13 @@ export default function Overview(): JSX.Element {
   /* pipeline bars */
   const pipeMax = Math.max(...PIPE_ORDER.map(k => ov.pipeline[k]), 1);
 
-  /* momentum */
-  const mom = ov.momentum[gran];
-  const dirLabel = mom.direction === "rising" ? "Rising" :
-                   mom.direction === "declining" ? "Declining" : "Stable";
-  const dirIcon  = mom.direction === "rising" ? "↑" :
-                   mom.direction === "declining" ? "↓" : "→";
-  const dirColor = mom.direction === "rising" ? "var(--green-fg)" :
-                   mom.direction === "declining" ? "var(--red-fg, #D8443F)" : "var(--muted3)";
+  /* market momentum — aggregated from the externally-researched Market Trends page */
+  const market = marketRes.data;
+  const marketTracks = market?.tracks ?? [];
+  const agg = aggregateTrajectory(marketTracks);
+  const hasMarket = !!market?.exists && agg.n > 0;
+  const dir = DIR[agg.direction];
+  const staleBadge = STALE_BADGE[market?.staleness ?? "unknown"];
 
   /* greeting + delta */
   const firstName = (sum.user?.name || "").trim().split(/\s+/)[0] || "there";
@@ -163,7 +180,7 @@ export default function Overview(): JSX.Element {
         display: "grid", gridTemplateColumns: "repeat(4,1fr)", gap: 16, marginBottom: 16,
       }}>
         {/* Active roles */}
-        <div style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".04s" }}>
+        <Link to="/jobs" className="stat-link" style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".04s" }}>
           <div style={{
             fontFamily: "'JetBrains Mono',monospace", fontSize: 11, letterSpacing: ".1em",
             textTransform: "uppercase", color: "var(--muted3)", marginBottom: 14,
@@ -182,10 +199,10 @@ export default function Overview(): JSX.Element {
           <div style={{ fontSize: 13, color: "var(--muted3)", marginTop: 8 }}>
             {newCount > 0 ? `${newCount} new since last index` : "postings tracked"}
           </div>
-        </div>
+        </Link>
 
         {/* Strong fits */}
-        <div style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".1s" }}>
+        <Link to="/coach" className="stat-link" style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".1s" }}>
           <div style={{
             fontFamily: "'JetBrains Mono',monospace", fontSize: 11, letterSpacing: ".1em",
             textTransform: "uppercase", color: "var(--muted3)", marginBottom: 14,
@@ -211,10 +228,10 @@ export default function Overview(): JSX.Element {
               {spread.excellent} excellent · {spread.good} good · {spread.stretch} stretch
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* In pipeline */}
-        <div style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".16s" }}>
+        <Link to="/tracker" className="stat-link" style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".16s" }}>
           <div style={{
             fontFamily: "'JetBrains Mono',monospace", fontSize: 11, letterSpacing: ".1em",
             textTransform: "uppercase", color: "var(--muted3)", marginBottom: 14,
@@ -230,10 +247,11 @@ export default function Overview(): JSX.Element {
           <div style={{ fontSize: 13, color: "var(--muted3)", marginTop: 8 }}>
             {ov.pipeline.interview} interviews · {ov.pipeline.offer} offer
           </div>
-        </div>
+        </Link>
 
         {/* Top match */}
-        <div style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".22s" }}>
+        <Link to={ov.hero.topMatchId ? `/jobs/${ov.hero.topMatchId}` : "/jobs"} className="stat-link"
+              style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".22s" }}>
           <div style={{
             fontFamily: "'JetBrains Mono',monospace", fontSize: 11, letterSpacing: ".1em",
             textTransform: "uppercase", color: "var(--muted3)", marginBottom: 14,
@@ -246,10 +264,10 @@ export default function Overview(): JSX.Element {
           </div>
           <div style={{ fontSize: 13, color: "var(--muted3)", marginTop: 8 }}>
             {ov.hero.topMatchId
-              ? <Link to={`/jobs/${ov.hero.topMatchId}`} style={{ color: "var(--accent)", textDecoration: "none" }}>see the role →</Link>
+              ? <span style={{ color: "var(--accent)" }}>see the role →</span>
               : "fit score"}
           </div>
-        </div>
+        </Link>
       </div>
 
       {/* ── PIPELINE + FRESHNESS ── */}
@@ -337,8 +355,8 @@ export default function Overview(): JSX.Element {
       <div style={{
         display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 16, marginBottom: 16,
       }}>
-        {/* Market momentum */}
-        <div style={{
+        {/* Market momentum — sourced from the Market Trends research, links to the full view */}
+        <Link to="/trends" className="stat-link" style={{
           background: "linear-gradient(160deg,var(--blue-soft),var(--violet-soft))",
           border: "1px solid var(--line)", borderRadius: 16, padding: 22,
           animation: "ccrise .5s ease both", animationDelay: ".24s",
@@ -350,29 +368,67 @@ export default function Overview(): JSX.Element {
               fontFamily: "'JetBrains Mono',monospace", fontSize: 11,
               letterSpacing: ".1em", textTransform: "uppercase", color: "#5566C8",
             }}>Market momentum</span>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            {hasMarket && (
               <span style={{
                 fontFamily: "'JetBrains Mono',monospace", fontSize: 12,
-                color: dirColor, fontWeight: 600,
-              }}>{dirIcon} {mom.pct}% · {mom.span}</span>
-              <Segmented
-                options={[["weekly", "Weekly"], ["monthly", "Monthly"]]}
-                value={gran}
-                onChange={setGran}
-              />
+                color: staleBadge.color, fontWeight: 600,
+              }}>
+                {staleBadge.label}{market?.researched ? ` · researched ${market.researched}` : ""}
+              </span>
+            )}
+          </div>
+
+          {hasMarket ? (
+            <>
+              <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
+                <span style={{
+                  fontSize: 40, fontWeight: 800, letterSpacing: "-0.03em",
+                  lineHeight: 1.1, color: dir.color,
+                }}>{dir.label}</span>
+                <span style={{ fontSize: 14, color: "#5566C8" }}>
+                  demand across your {agg.n} track{agg.n === 1 ? "" : "s"}
+                  {" · "}{agg.rising} rising · {agg.cooling} cooling
+                </span>
+              </div>
+              <div style={{ marginTop: 14, display: "flex", flexDirection: "column", gap: 8 }}>
+                {marketTracks.filter(t => t.trajectory).map(t => (
+                  <div key={t.track} style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    fontSize: 13, color: "var(--ink2)",
+                  }}>
+                    <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{
+                        width: 16, textAlign: "center",
+                        color: DIR[t.trajectory as "rising" | "steady" | "cooling"].color, fontWeight: 700,
+                      }}>{TRAJ_ARROW[t.trajectory!]}</span>
+                      {humanizeTrack(t.track)}
+                    </span>
+                    <span style={{
+                      fontFamily: "'JetBrains Mono',monospace", fontSize: 11, color: "#5566C8", letterSpacing: ".05em",
+                    }}>{demandDots(t.demand)}</span>
+                  </div>
+                ))}
+              </div>
+            </>
+          ) : marketRes.loading ? (
+            <div style={{ fontSize: 14, color: "#5566C8", paddingTop: 4 }}>Reading the market…</div>
+          ) : (
+            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+              <span style={{
+                fontSize: 26, fontWeight: 700, letterSpacing: "-0.02em",
+                lineHeight: 1.15, color: "#2F3DC0",
+              }}>No market read yet</span>
+              <span style={{ fontSize: 14, color: "#5566C8" }}>
+                Run <code style={{ fontFamily: "'JetBrains Mono',monospace" }}>/market-trends</code> to chart demand for your tracks.
+              </span>
+              {marketRes.error && (
+                <span style={{ fontSize: 12, color: "#5566C8", opacity: 0.85 }}>
+                  Already ran it? Restart the dashboard (<code style={{ fontFamily: "'JetBrains Mono',monospace" }}>npm run coach</code>) so it loads the latest.
+                </span>
+              )}
             </div>
-          </div>
-          <div style={{ display: "flex", alignItems: "baseline", gap: 10 }}>
-            <span style={{
-              fontSize: 40, fontWeight: 800, letterSpacing: "-0.03em",
-              lineHeight: 1.1, color: "#2F3DC0",
-            }}>{dirLabel}</span>
-            <span style={{ fontSize: 14, color: "#5566C8" }}>demand for your tracks</span>
-          </div>
-          <div style={{ marginTop: 10 }}>
-            <Sparkline points={mom.series.map(p => p.count)} width={340} height={80} />
-          </div>
-        </div>
+          )}
+        </Link>
 
         {/* Demand by track */}
         <div style={{ ...cardStyle, animation: "ccrise .5s ease both", animationDelay: ".3s" }}>

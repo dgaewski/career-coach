@@ -1,21 +1,65 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from "vitest";
-import { screen, fireEvent } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import Overview from "../src/views/Overview.js";
 import { renderAt, mockFetch } from "./helpers.js";
-import { SUMMARY, OVERVIEW } from "./fixtures.js";
+import { SUMMARY, OVERVIEW, MARKET } from "./fixtures.js";
 
 const BRIEF = {};
 
+function hrefOfCard(label: string): string | null | undefined {
+  return screen.getByText(label).closest("a")?.getAttribute("href");
+}
+
 describe("Overview", () => {
-  it("renders hero stats, pipeline, momentum toggle, and word cloud", async () => {
-    mockFetch({ "/api/summary": SUMMARY, "/api/overview": OVERVIEW, "/api/brief": BRIEF, "/api/jobs": [] });
+  it("renders hero stats, market momentum, and word cloud", async () => {
+    mockFetch({ "/api/summary": SUMMARY, "/api/overview": OVERVIEW, "/api/brief": BRIEF, "/api/jobs": [], "/api/market": MARKET });
     renderAt(<Overview />);
     expect(await screen.findByText("Good morning, Alex.")).toBeTruthy();
     expect(screen.getByText(String(OVERVIEW.hero.topMatch))).toBeTruthy();
     expect(screen.getByText("ROS 2")).toBeTruthy();
-    fireEvent.click(screen.getByText("Monthly"));   // momentum toggle works
-    expect(screen.getByRole("tab", { name: "Monthly" }).getAttribute("aria-selected")).toBe("true");
+    // momentum now reflects market trajectory (2 rising / 0 cooling → Rising), not ingest volume
+    expect(screen.getByText("Rising")).toBeTruthy();
+  });
+
+  it("derives the market direction from /api/market trajectories", async () => {
+    const cooling = { ...MARKET, tracks: [
+      { track: "robotics", trajectory: "cooling", demand: 2 },
+      { track: "software", trajectory: "cooling", demand: 2 },
+      { track: "ai-ml", trajectory: "rising", demand: 5 },
+    ] };
+    mockFetch({ "/api/summary": SUMMARY, "/api/overview": OVERVIEW, "/api/brief": BRIEF, "/api/jobs": [], "/api/market": cooling });
+    renderAt(<Overview />);
+    expect(await screen.findByText("Cooling")).toBeTruthy();
+  });
+
+  it("nudges /market-trends when no research exists (no restart hint)", async () => {
+    const empty = { exists: false, researched: null, updated: null, sources: [], staleness: "unknown", tracks: [] };
+    mockFetch({ "/api/summary": SUMMARY, "/api/overview": OVERVIEW, "/api/brief": BRIEF, "/api/jobs": [], "/api/market": empty });
+    renderAt(<Overview />);
+    expect(await screen.findByText("Good morning, Alex.")).toBeTruthy();
+    expect(screen.getByText(/market-trends/)).toBeTruthy();
+    expect(screen.queryByText(/Restart/i)).toBeNull();   // fresh instance: pure call-to-action, no server hint
+  });
+
+  it("suggests the command (not a raw error) when /api/market is unavailable, with a restart hint", async () => {
+    // No /api/market mock -> the stub 404s, mirroring a coach server started before the route existed.
+    mockFetch({ "/api/summary": SUMMARY, "/api/overview": OVERVIEW, "/api/brief": BRIEF, "/api/jobs": [] });
+    renderAt(<Overview />);
+    expect(await screen.findByText("Good morning, Alex.")).toBeTruthy();
+    expect(screen.getByText(/market-trends/)).toBeTruthy();
+    expect(screen.getByText(/Restart/i)).toBeTruthy();
+    expect(screen.queryByText(/Failed to load|HTTP 404/i)).toBeNull();
+  });
+
+  it("makes the hero cards and momentum card clickable to their views", async () => {
+    mockFetch({ "/api/summary": SUMMARY, "/api/overview": OVERVIEW, "/api/brief": BRIEF, "/api/jobs": [], "/api/market": MARKET });
+    renderAt(<Overview />);
+    await screen.findByText("Good morning, Alex.");
+    expect(hrefOfCard("Active roles")).toBe("/jobs");
+    expect(hrefOfCard("Strong fits")).toBe("/coach");
+    expect(hrefOfCard("In pipeline")).toBe("/tracker");
+    expect(hrefOfCard("Market momentum")).toBe("/trends");
   });
 
   it("does not crash when fitSpread is missing (graceful)", async () => {

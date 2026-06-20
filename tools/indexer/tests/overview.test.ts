@@ -1,23 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { isoWeekKey, volumeMomentum, computeOverview } from "../src/overview.js";
-
-describe("isoWeekKey", () => {
-  it("formats ISO week", () => { expect(isoWeekKey(new Date("2026-06-11"))).toBe("2026-W24"); });
-});
-
-describe("volumeMomentum", () => {
-  it("rising when latest bucket exceeds prior mean; span counts buckets", () => {
-    const m = volumeMomentum(["2026-04", "2026-04", "2026-06", "2026-06", "2026-06"], k => k, "mo");
-    expect(m.series).toEqual([{ bucket: "2026-04", count: 2 }, { bucket: "2026-06", count: 3 }]);
-    expect(m.direction).toBe("rising");
-    expect(m.span).toBe("2 mo");
-  });
-  it("building history with <2 buckets", () => {
-    const m = volumeMomentum(["2026-06"], k => k, "wk");
-    expect(m.span).toBe("building history");
-    expect(m.direction).toBe("stable");
-  });
-});
+import { computeOverview } from "../src/overview.js";
 
 describe("computeOverview", () => {
   const jr = (id: string, score: number, track: string[], fresh: string, app = "none", status = "active", tier = "good") =>

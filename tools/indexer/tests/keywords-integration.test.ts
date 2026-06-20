@@ -15,11 +15,9 @@ async function indexed() {
 const read = async (root: string, f: string) => JSON.parse(await readFile(path.join(root, "data", f), "utf8"));
 
 describe("indexer emits overview/keywords/snapshot", () => {
-  it("writes overview.json with hero + momentum", async () => {
+  it("writes overview.json with hero", async () => {
     const ov = await read(await indexed(), "overview.json");
     expect(typeof ov.hero.activeRoles).toBe("number");
-    expect(ov.momentum.weekly).toBeTruthy();
-    expect(ov.momentum.monthly).toBeTruthy();
   });
   it("writes keywords.json as {term,count}[] sorted desc", async () => {
     const kw = await read(await indexed(), "keywords.json");

@@ -7,12 +7,11 @@ let app: Awaited<ReturnType<typeof buildApp>>;
 beforeAll(async () => { const root = await makeTempWiki(); app = await buildApp(new DataStore(root), root); });
 
 describe("GET /api/overview", () => {
-  it("returns hero + momentum + freshness", async () => {
+  it("returns hero + freshness", async () => {
     const r = await app.inject({ method: "GET", url: "/api/overview" });
     expect(r.statusCode).toBe(200);
     const ov = r.json();
     expect(typeof ov.hero.activeRoles).toBe("number");
-    expect(ov.momentum.weekly).toBeTruthy();
     expect(ov.freshness).toHaveProperty("fresh");
   });
 });

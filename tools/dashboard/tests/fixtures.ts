@@ -60,14 +60,20 @@ export const OVERVIEW = {
   freshness: { fresh: 12, recent: 5, stale: 3 },
   fitSpread: { excellent: 6, good: 8, stretch: 4, poor: 2 },
   demandByTrack: { robotics: 6, software: 4, "ai-ml": 7, "ee-hardware": 4 },
-  momentum: {
-    weekly: { direction: "rising", pct: 18, span: "6 wk", series: [{ bucket: "2026-W20", count: 2 }, { bucket: "2026-W24", count: 5 }] },
-    monthly: { direction: "stable", pct: 0, span: "1 mo", series: [{ bucket: "2026-06", count: 20 }] },
-  },
   wordCloud: [{ slug: "ros2", name: "ROS 2", count: 6, tier: "high-demand", have: false, trend: "rising" }],
   changes: { newRoles: [], fitImproved: [], fitDeclined: [], staleFlipped: [] },
   indexedAt: "2026-06-13T12:00:00Z",
   trackReadiness: { "ee-hardware": 0.72, software: 0.45, robotics: 0.5, "ai-ml": 0.6 },
+};
+export const MARKET = {
+  exists: true, researched: "2026-06-19", updated: "2026-06-19", sources: ["https://bls.gov"],
+  staleness: "fresh",
+  tracks: [
+    { track: "robotics",    trajectory: "rising", demand: 4 },
+    { track: "software",    trajectory: "steady", demand: 4 },
+    { track: "ai-ml",       trajectory: "rising", demand: 5 },
+    { track: "ee-hardware", trajectory: "steady", demand: 3 },
+  ],
 };
 export const BRIEF = {
   masthead: { vol: "1", no: 20, date: "2026-06-13", indexedAt: "2026-06-13T12:00:00Z" },
