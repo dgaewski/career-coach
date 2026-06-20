@@ -13,6 +13,13 @@ export function addClient(reply: FastifyReply): void {
   reply.raw.on("close", () => clients.delete(reply));
 }
 
+/** End every open SSE response and clear the registry — call on shutdown so
+ *  app.close() doesn't hang waiting on long-lived event-stream connections. */
+export function closeAllClients(): void {
+  for (const c of clients) { try { c.raw.end(); } catch { /* already gone */ } }
+  clients.clear();
+}
+
 export function broadcast(event: string, data: string): void {
   for (const c of clients) {
     try {

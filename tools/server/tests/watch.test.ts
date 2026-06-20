@@ -1,5 +1,28 @@
 import { describe, it, expect, vi } from "vitest";
-import { makeReindexScheduler } from "../src/watch.js";
+import path from "node:path";
+import { makeReindexScheduler, isIgnored, watchTargets } from "../src/watch.js";
+
+const p = (...parts: string[]) => path.join("/wiki", ...parts);
+
+describe("watch targets + ignore", () => {
+  it("watches the content dirs and tools/config.json", () => {
+    const t = watchTargets("/wiki");
+    for (const d of ["jobs", "skills", "companies", "coach"]) expect(t).toContain(p(d));
+    expect(t).toContain(p("tools", "config.json"));   // scoring-knob changes must trigger a re-index
+  });
+
+  it("ignores generated/build dirs and temp files", () => {
+    expect(isIgnored(p("data", "jobs.json"))).toBe(true);
+    expect(isIgnored(p("analytics", "Trends.md"))).toBe(true);
+    expect(isIgnored(p("tools", "indexer", "src", "index.ts"))).toBe(true);
+    expect(isIgnored(p("jobs", "Acme.md.tmp"))).toBe(true);
+  });
+
+  it("does NOT ignore content files or tools/config.json", () => {
+    expect(isIgnored(p("jobs", "Acme.md"))).toBe(false);
+    expect(isIgnored(p("tools", "config.json"))).toBe(false);   // the fix: config.json is the one watched tools/ file
+  });
+});
 
 describe("makeReindexScheduler", () => {
   it("debounces bursts into one run and suppresses events during the run", async () => {

@@ -22,6 +22,12 @@ describe("renderPage", () => {
     expect(html).not.toContain("javascript:");
   });
 
+  it("blocks javascript: in image src too — degrades to alt text, no scheme leaks", () => {
+    const html = renderPage("![x](javascript:alert(1))");
+    expect(html).not.toContain("javascript:");
+    expect(html).not.toContain("<img");
+  });
+
   it("does not double-escape ampersands inside fenced code blocks", () => {
     const html = renderPage("```\na & b\n```");
     expect(html).toContain("a &amp; b");

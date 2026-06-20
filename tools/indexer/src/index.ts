@@ -20,12 +20,21 @@ import { buildSnapshot, diffSnapshot } from "./changes.js";
 import { computeOverview } from "./overview.js";
 import type { Snapshot } from "./types.js";
 
-export function strongFitWarning(strong: number, active: number, threshold: number): string | null {
-  if (active === 0) return null;
+/**
+ * Calibration-drift detector. Flags (never auto-changes) when the strong-fit
+ * share leaves the healthy band — too high = under-discriminating, too low =
+ * over-discriminating — so the owner re-runs calibration when it makes sense.
+ * Quiet on corpora too small (<20 active) to judge.
+ */
+export function calibrationDriftWarning(
+  strong: number, active: number, band: { min: number; max: number },
+): string | null {
+  if (active < 20) return null;
   const pct = Math.round((strong / active) * 100);
-  return pct > 50
-    ? `fit discrimination: ${pct}% of active roles are strong fits (≥${threshold}) — scoring may be under-discriminating`
-    : null;
+  const lo = Math.round(band.min * 100), hi = Math.round(band.max * 100);
+  if (pct > hi) return `fit calibration: ${pct}% of active roles are strong fits (target ${lo}–${hi}%) — under-discriminating; consider raising fitTiers.excellent in tools/config.json and re-indexing`;
+  if (pct < lo) return `fit calibration: only ${pct}% of active roles are strong fits (target ${lo}–${hi}%) — consider lowering fitTiers.excellent in tools/config.json and re-indexing`;
+  return null;
 }
 
 export async function runIndexer(root: string, now: Date): Promise<void> {
@@ -94,9 +103,10 @@ export async function runIndexer(root: string, now: Date): Promise<void> {
   const changes = diffSnapshot(prior, jobRecords, flippedIds);
   const overview = computeOverview(jobRecords, stats, { changes }, now, user.tracks);
   const activeRecs = jobRecords.filter(j => j.fm.status === "active");
-  const canary = strongFitWarning(
-    activeRecs.filter(j => j.fit.tier === "excellent").length, activeRecs.length, cfg.fitTiers.excellent);
-  if (canary) warnings.push(canary);
+  const drift = calibrationDriftWarning(
+    activeRecs.filter(j => j.fit.tier === "excellent").length, activeRecs.length,
+    cfg.fitTuning?.strongFitBand ?? { min: 0.12, max: 0.30 });
+  if (drift) warnings.push(drift);
   const keywordCounts = new Map<string, number>();
   for (const j of scan.jobs) if (j.fm.status === "active") for (const k of (j.fm.keywords ?? [])) keywordCounts.set(k, (keywordCounts.get(k) ?? 0) + 1);
   const keywords = [...keywordCounts.entries()].map(([term, count]) => ({ term, count })).sort((a, b) => b.count - a.count);

@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { atomicWrite } from "../../indexer/src/io.js";
+import { withFileLock } from "./filelock.js";
 
 const STATUSES = new Set(["none", "interested", "applied", "interview", "offer", "rejected"]);
 const STAGES = new Set(["screening", "oa", "phone", "onsite", "offer-declined"]);
@@ -36,7 +37,8 @@ export async function applyAppStatus(
   if (rejection?.stage && !STAGES.has(rejection.stage)) throw new Error(`invalid stage: ${rejection.stage}`);
   if (rejection?.stage && status !== "rejected") throw new Error("rejection fields require status=rejected");
 
-  // TODO Phase 4b: per-file mutex — concurrent POSTs race read-modify-write (lost update).
+  // Serialize read-modify-write per file so concurrent POSTs can't lose updates.
+  return withFileLock(file, async () => {
   const raw = await readFile(file, "utf8");
   let { head, rest } = splitFrontmatter(raw);
   const today = day(now);
@@ -82,6 +84,7 @@ export async function applyAppStatus(
   head = upsertLine(head, "updated", `updated: ${today}`, "created");
 
   await atomicWrite(file, head + rest);
+  });
 }
 
 export async function appendNote(file: string, text: string, now: Date): Promise<void> {
@@ -89,6 +92,7 @@ export async function appendNote(file: string, text: string, now: Date): Promise
   if (!trimmed) throw new Error("empty note");
   if (trimmed.length > 2000) throw new Error("note too long");
 
+  return withFileLock(file, async () => {
   const raw = await readFile(file, "utf8");
   const bullet = `- ${day(now)}: ${trimmed}`;
   let next: string;
@@ -110,4 +114,5 @@ export async function appendNote(file: string, text: string, now: Date): Promise
   }
 
   await atomicWrite(file, next);
+  });
 }

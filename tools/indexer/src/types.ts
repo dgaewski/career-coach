@@ -12,6 +12,7 @@ export interface Config {
     shrinkK: number;
     depthBonusPer: number;
     depthBonusCap: number;
+    strongFitBand?: { min: number; max: number };   // healthy strong-fit share; drift outside → calibration warning
   };
   penalties?: { belowFloor: number; clearanceRisk: number; workAuthRisk: number };
   pivotBoost?: number;

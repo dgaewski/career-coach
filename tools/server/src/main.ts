@@ -5,7 +5,7 @@ import { buildApp } from "./app.js";
 import { DataStore } from "./store.js";
 import { resolveWikiRoot } from "./paths.js";
 import { makeReindexScheduler, startWatcher } from "./watch.js";
-import { broadcast } from "./sse.js";
+import { broadcast, closeAllClients } from "./sse.js";
 import fastifyStatic from "@fastify/static";
 import { existsSync } from "node:fs";
 
@@ -37,6 +37,7 @@ async function main(): Promise<void> {
     if (stopping) return;                                 // ignore a second Ctrl-C mid-shutdown
     stopping = true;
     await watcher.close();
+    closeAllClients();          // end SSE streams first so app.close() doesn't hang on them
     await app.close();
     process.exit(0);
   };

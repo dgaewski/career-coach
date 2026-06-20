@@ -25,11 +25,25 @@ export function makeReindexScheduler(run: () => Promise<void>, debounceMs: numbe
 }
 
 const WATCH_DIRS = ["jobs", "skills", "companies", "coach"];
-const IGNORE = /[\\/](data|analytics|tools|node_modules|\.git)[\\/]|\.tmp$/;
+
+/** Paths the watcher monitors: the content dirs + tools/config.json (so scoring-knob
+ *  edits trigger a re-index — config.json is otherwise outside the watched dirs). */
+export function watchTargets(root: string): string[] {
+  return [...WATCH_DIRS.map(d => path.join(root, d)), path.join(root, "tools", "config.json")];
+}
+
+/** Skip generated/build output and temp files. Everything under tools/ is ignored
+ *  EXCEPT config.json (the one tunable we explicitly watch). */
+export function isIgnored(p: string): boolean {
+  if (/\.tmp$/.test(p)) return true;
+  if (/[\\/](data|analytics|node_modules|\.git)[\\/]/.test(p)) return true;
+  if (/[\\/]tools[\\/]/.test(p) && path.basename(p) !== "config.json") return true;
+  return false;
+}
 
 export function startWatcher(root: string, onChange: () => void): { close(): Promise<void> } {
-  const watcher = chokidar.watch(WATCH_DIRS.map(d => path.join(root, d)), {
-    ignored: IGNORE, ignoreInitial: true, awaitWriteFinish: { stabilityThreshold: 300, pollInterval: 100 },
+  const watcher = chokidar.watch(watchTargets(root), {
+    ignored: isIgnored, ignoreInitial: true, awaitWriteFinish: { stabilityThreshold: 300, pollInterval: 100 },
   });
   watcher.on("all", onChange);
   return { close: () => watcher.close() };
