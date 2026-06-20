@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { useData } from "../hooks/useData.js";
 import type { GapEntry, Job, ListedPage, Overview, Summary } from "../lib/types.js";
 import { TrendArrow } from "../components/Chips.js";
+import { GrowBar } from "../components/primitives.js";
 import { applyPicks, readinessRows, suggestedTodos } from "../lib/coachDerive.js";
 import { toggleTodo } from "../lib/mutations.js";
-import { trackOptions } from "../lib/vocab.js";
+import { trackColor, trackOptions } from "../lib/vocab.js";
 
 const mono = "'JetBrains Mono', monospace";
 const serif = "'Newsreader', serif";
@@ -23,27 +24,6 @@ const cardStyle = {
 const kicker = {
   fontFamily: mono, fontSize: 11, letterSpacing: ".12em",
   textTransform: "uppercase" as const, color: "var(--accent)",
-};
-
-// Per-track bar colours — distinct, non-blue hues (skill-gap bars stay blue).
-const TRACK_BAR: Record<string, string> = {
-  robotics:      "linear-gradient(90deg,#7A53F2,#9B6BF0)",   // violet
-  "ai-ml":       "linear-gradient(90deg,#D6409F,#E861B0)",   // magenta
-  "ee-hardware": "linear-gradient(90deg,#E0902E,#EBA94E)",   // amber
-  software:      "linear-gradient(90deg,#159B8A,#27B3A0)",   // teal
-};
-const TRACK_PALETTE = [
-  "linear-gradient(90deg,#7A53F2,#9B6BF0)", // violet
-  "linear-gradient(90deg,#D6409F,#E861B0)", // magenta
-  "linear-gradient(90deg,#E0902E,#EBA94E)", // amber
-  "linear-gradient(90deg,#159B8A,#27B3A0)", // teal
-  "linear-gradient(90deg,#3E7BEA,#5C95F2)", // blue
-  "linear-gradient(90deg,#C7503B,#DA6A55)", // rust
-];
-const trackBar = (track: string): string => {
-  if (TRACK_BAR[track]) return TRACK_BAR[track];
-  let h = 0; for (let i = 0; i < track.length; i++) h = (h * 31 + track.charCodeAt(i)) >>> 0;
-  return TRACK_PALETTE[h % TRACK_PALETTE.length];
 };
 
 // ─── Status colour for portfolio project status badge ────────────────────────
@@ -297,7 +277,7 @@ export default function Coach(): JSX.Element {
                     <span style={{ fontFamily: mono, fontSize: 11.5, color: "var(--muted)" }}>{r.pct}%</span>
                   </div>
                   <div style={{ height: 8, background: "var(--line5)", borderRadius: 99, overflow: "hidden" }}>
-                    <div style={{ width: `${r.pct}%`, height: "100%", background: trackBar(r.track), borderRadius: 99 }} />
+                    <GrowBar frac={r.pct / 100} fill={trackColor(r.track, summaryRes.data?.user?.tracks).gradient} />
                   </div>
                 </div>
               ))}

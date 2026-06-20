@@ -6,7 +6,7 @@ import { InterestButton } from "../components/InterestButton.js";
 import {
   CountUp, GrowBar, Stars, Segmented, Sparkline, Donut, WordCloud,
 } from "../components/primitives.js";
-import { humanizeTrack } from "../lib/vocab.js";
+import { humanizeTrack, trackColor } from "../lib/vocab.js";
 
 /* ── helpers ── */
 function relativeTime(iso: string): string {
@@ -393,7 +393,7 @@ export default function Overview(): JSX.Element {
                   height: 8, background: "var(--line5, #EBEBEB)",
                   borderRadius: 99, overflow: "hidden",
                 }}>
-                  <GrowBar frac={count / maxTrack} />
+                  <GrowBar frac={count / maxTrack} fill={trackColor(key, sum.user?.tracks).gradient} />
                 </div>
               </div>
             ))}

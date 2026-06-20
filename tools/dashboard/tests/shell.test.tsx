@@ -6,11 +6,11 @@ import { renderAt, mockFetch } from "./helpers.js";
 import { SUMMARY } from "./fixtures.js";
 
 describe("App shell", () => {
-  it("renders wordmark, all 8 nav tabs, theme toggle, and live pill", async () => {
+  it("renders wordmark, all 9 nav tabs, theme toggle, and live pill", async () => {
     mockFetch({ "/api/summary": SUMMARY, "/api/overview": {}, "/api/jobs": [], "/api/skills": [], "/api/errors": [] });
     renderAt(<App />, "/");
     expect(await screen.findByText("Career Coach")).toBeTruthy();
-    for (const t of ["Overview","Morning Brief","Jobs","Tracker","Coach","Skills","Companies","Map"])
+    for (const t of ["Overview","Morning Brief","Coach","Market Trends","Jobs","Tracker","Skills","Companies","Map"])
       expect(screen.getByRole("link", { name: t })).toBeTruthy();
     expect(screen.getByText("live")).toBeTruthy();
     expect(screen.getByLabelText(/theme/i)).toBeTruthy();

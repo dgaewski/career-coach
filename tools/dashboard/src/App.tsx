@@ -18,10 +18,11 @@ import CompanyDetail from "./views/CompanyDetail.js";
 import MapView from "./views/MapView.js";
 import PageView from "./views/PageView.js";
 import MorningBrief from "./views/MorningBrief.js";
+import Trends from "./views/Trends.js";
 
 const NAV: [string, string][] = [
-  ["/", "Overview"], ["/brief", "Morning Brief"], ["/coach", "Coach"], ["/jobs", "Jobs"],
-  ["/tracker", "Tracker"], ["/skills", "Skills"], ["/companies", "Companies"], ["/map", "Map"],
+  ["/", "Overview"], ["/brief", "Morning Brief"], ["/coach", "Coach"], ["/trends", "Market Trends"],
+  ["/jobs", "Jobs"], ["/tracker", "Tracker"], ["/skills", "Skills"], ["/companies", "Companies"], ["/map", "Map"],
 ];
 
 /** Subscribes to SSE refresh events and fetches /api/overview on each one.
@@ -60,6 +61,7 @@ function RoutedViews(): JSX.Element {
         <Route path="/jobs/:id" element={<JobDetail />} />
         <Route path="/tracker" element={<Tracker />} />
         <Route path="/coach" element={<Coach />} />
+        <Route path="/trends" element={<Trends />} />
         <Route path="/companies" element={<Companies />} />
         <Route path="/companies/:name" element={<CompanyDetail />} />
         <Route path="/map" element={<MapView />} />

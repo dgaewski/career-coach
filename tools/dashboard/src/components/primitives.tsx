@@ -20,8 +20,8 @@ export function CountUp({ value, duration = 950 }: { value: number; duration?: n
   return <>{n}</>;
 }
 
-export function GrowBar({ frac, className = "" }: { frac: number; className?: string }): JSX.Element {
-  return <div className={`growbar ${className}`} style={{ transform: `scaleX(${Math.max(0, Math.min(1, frac))})`, transformOrigin: "left" }} />;
+export function GrowBar({ frac, className = "", fill }: { frac: number; className?: string; fill?: string }): JSX.Element {
+  return <div className={`growbar ${className}`} style={{ transform: `scaleX(${Math.max(0, Math.min(1, frac))})`, transformOrigin: "left", ...(fill ? { background: fill } : {}) }} />;
 }
 
 export function Stars({ score }: { score: number }): JSX.Element {

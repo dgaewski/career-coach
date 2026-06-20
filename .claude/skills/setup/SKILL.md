@@ -65,6 +65,7 @@ Seed the coaching side so the Coach view is useful. (The **Skill Gap Analysis** 
 2. **To-dos** — write `coach/To-dos.md` with a few starter career to-dos (e.g. tighten the résumé, close the top skill gap from the gap analysis, publish a portfolio piece). Use the dashboard's checkbox format: `- [ ] …`.
 3. **Portfolio Roadmap** — if they ran a search (so gaps exist), draft `coach/Portfolio Roadmap.md` (`type: coach`) with 1–3 portfolio-project ideas that would close their top gaps; create and link any `coach/projects/*` pages you reference. (Skip if there's no gap data yet.)
 4. **Advice (optional — offer):** offer to research 1–2 advice topics relevant to their field (e.g. interview prep, salary negotiation) into `coach/advice/<Topic>.md` (`type: advice` with `researched:` + `sources:`). This is slower — let them skip and do it later via `/coach`.
+5. **Market read (optional — offer):** offer to research the broad market for their tracks — *"Want a market read on your fields? It builds your Market Trends page with demand, salary, top skills, and who's hiring per track. A few minutes of web research, or skip and run `/market-trends` later."* **Default to yes**, but let them skip. If yes, run the **`/market-trends`** flow (research each track from real sources, write `coach/Market Trends.md`); if they skip, the Market Trends page shows its empty state until they run the command.
 
 Add any new pages to `index.md`, log the session in `log.md`, and re-run `npm run index` if you wrote pages that affect the dashboard.
 

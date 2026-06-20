@@ -24,6 +24,7 @@ const commands: { name: string; args: boolean }[] = [
   { name: "help", args: false },
   { name: "watch", args: true },
   { name: "update", args: false },
+  { name: "market-trends", args: false },
 ];
 
 describe("command layer (.claude/skills)", () => {
@@ -51,5 +52,6 @@ describe("command layer (.claude/skills)", () => {
     const parsed = matter(readFileSync(skillPath("setup"), "utf8"));
     expect(parsed.content).toMatch(/Phase 1/);
     expect(parsed.content).toMatch(/Phase 4/);
+    expect(parsed.content).toMatch(/market-trends/);
   });
 });

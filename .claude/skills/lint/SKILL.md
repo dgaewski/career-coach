@@ -15,7 +15,7 @@ Run `npm run index` then `npm run checklinks` in `tools/`. Read `data/meta.json`
 ## LLM checks
 Then do the judgment checks the engine can't:
 - contradictions across pages;
-- advice pages whose `researched:` date is over 6 months old (flag for re-verification);
+- advice **and Market Trends** (`type: market-trends`) pages whose `researched:` date is over 6 months old (flag for re-verification);
 - orphan pages (no inbound links) and missing cross-links;
 - duplicate company-name variants;
 - dead-link spot checks (WebFetch a sample);

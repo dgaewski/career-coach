@@ -29,7 +29,7 @@ The indexer reads this instance's calibration from `USER.md` — tracks, geo-zon
 - Filenames: Title Case with spaces. Job pages: `<Company> — <Title>.md` (em dash), disambiguate with city or date if needed.
 - Internal links `[[Page Name]]`; external links standard markdown. Link liberally; a link to a not-yet-written page marks a gap.
 - All wiki pages carry frontmatter with at least `type`, `created`, `updated`.
-- The user-facing command layer lives in `.claude/skills/<name>/SKILL.md` (prompt templates calibrated by `USER.md`). `/setup` onboards a new instance; `/find-jobs`, `/add-job`, `/coach`, `/update-resume`, and `/lint` wrap the documented workflows (Ingest batch / Manual drop / Coaching session / Profile update / Lint); `/status`, `/backup`, `/help`, `/watch`, and `/update` round out the operational set; and `/why` and `/compare` are decision tools over the indexed fit data.
+- The user-facing command layer lives in `.claude/skills/<name>/SKILL.md` (prompt templates calibrated by `USER.md`). `/setup` onboards a new instance; `/find-jobs`, `/add-job`, `/coach`, `/update-resume`, and `/lint` wrap the documented workflows (Ingest batch / Manual drop / Coaching session / Profile update / Lint); `/status`, `/backup`, `/help`, `/watch`, and `/update` round out the operational set; and `/why`, `/compare`, and `/market-trends` are decision tools over the indexed fit data and the broader market.
 
 ## Job page schema (`jobs/`)
 
@@ -106,6 +106,7 @@ Body sections: one-liner, `## What they do`, `## Openings observed` (wikilinks t
 - `Portfolio Roadmap.md` (`type: coach`) — strategy overview linking `projects/` pages.
 - `projects/<Project>.md` (`type: project`; `status: idea|in-progress|done`, `closes: [slugs]`, `repo:`) — one page per portfolio project.
 - `briefs/<YYYY-MM-DD> Batch Brief.md` (`type: brief`) — see Ingest workflow step 7.
+- `Market Trends.md` (`type: market-trends`; top-level `researched:` + `updated:` + global `sources:`) — broad, externally-sourced market research per `USER.md` track, authored by `/market-trends`. A `market:` frontmatter block holds a `tracks:` list, one entry per track: `track` (a `USER.md` track label — required; the scorecard's "your fit" derivation matches on it), `trajectory` (rising|steady|cooling), `headline`, `demand` (1–5), `growthNote` (sourced number, optional), `competition` (low|moderate|high|very-high), `salary` (by level), `coreSkills`/`emergingSkills`/`fadingSkills` (exact skill slugs), `tailwinds`/`headwinds`/`hiring` (+ optional `hiringCompanies`), `snapshot` (sourced prose with `[n]` markers), `yourFit`, and optional per-track `sources`. Consumed by `/api/market` → the dashboard **Market Trends** view. A `## Notes` body section survives regeneration. Re-verify (re-run `/market-trends`) when older than 6 months.
 - `interviews/` (`type: interview-bank`) — grows organically; entries track question, where seen, frequency, difficulty, confidence.
 - `advice/<Topic>.md` (`type: advice`; `researched: YYYY-MM-DD`, `sources: [urls]`) — re-verify anything older than 6 months.
 
@@ -135,7 +136,7 @@ New resume → versioned into `raw-sources/`, re-synthesize `Profile.md` (bump `
 
 ## Workflow: Lint
 
-LLM lint: contradictions; advice `researched:` > 6 months; orphan pages; missing cross-links; duplicate company name variants; dead-link spot checks; `have:` flags contradicting Profile; mentioned-but-unwritten pages. Findings → `log.md` under `lint YYYY-MM-DD`. (Deterministic checks — salary sanity, alias collisions, empty Fit notes, unresolvable slugs — are the indexer's job from Phase 3.)
+LLM lint: contradictions; advice/Market-Trends `researched:` > 6 months; orphan pages; missing cross-links; duplicate company name variants; dead-link spot checks; `have:` flags contradicting Profile; mentioned-but-unwritten pages. Findings → `log.md` under `lint YYYY-MM-DD`. (Deterministic checks — salary sanity, alias collisions, empty Fit notes, unresolvable slugs — are the indexer's job from Phase 3.)
 
 ## Per-page ingest checklist (run mentally before saving any job page)
 

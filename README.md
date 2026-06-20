@@ -26,6 +26,7 @@ It runs entirely inside [Claude Code](https://claude.com/claude-code) — a set 
 | `/coach` | A coaching session grounded in your profile + analytics |
 | `/why <job>` | Why a role scored the way it did — your matching skills, gaps, and flags |
 | `/compare <A> <B>` | Put 2–4 roles side by side to decide where to focus |
+| `/market-trends` | Research the broad market for your tracks — demand, salary, top skills, who's hiring |
 | `/update-resume` | Re-synthesize your profile from a new résumé |
 | `/lint` | Consistency + freshness checks across your wiki |
 | `/watch <category> <cadence>` | Schedule a recurring job search |
@@ -42,7 +43,7 @@ It runs entirely inside [Claude Code](https://claude.com/claude-code) — a set 
 
 ## What you get
 
-A local dashboard at `http://localhost:4280` (`npm run coach` in `tools/`) with eight views: an **Overview** (pipeline + momentum), a **Morning Brief**, a **Coach** view with your skill-gap analysis and a weekly action plan, a sortable/filterable **Jobs** list, an application **Tracker**, a **Skills** explorer (market demand + your gaps), a **Companies** browser, and a **Map** of openings. Plus link-health checking and a private backup of everything.
+A local dashboard at `http://localhost:4280` (`npm run coach` in `tools/`) with nine views: an **Overview** (pipeline + momentum), a **Morning Brief**, a **Coach** view with your skill-gap analysis and a weekly action plan, a sortable/filterable **Jobs** list, an application **Tracker**, a **Skills** explorer (market demand + your gaps), a **Companies** browser, a **Map** of openings, and a **Market Trends** view of per-track market research. Plus link-health checking and a private backup of everything.
 
 ## Privacy
 

@@ -83,3 +83,31 @@ export interface Brief {
 export type LinkStatus = "live" | "dead" | "redirected" | "none" | "unverified";
 export interface LinkInfo { status: LinkStatus; finalUrl?: string; checked: string }
 export type LinksMap = Record<string, LinkInfo>;   // jobId → link info
+
+export interface MarketTrack {
+  track: string;
+  trajectory?: "rising" | "steady" | "cooling";
+  headline?: string;
+  demand?: number;
+  growthNote?: string;
+  competition?: "low" | "moderate" | "high" | "very-high";
+  salary?: Record<string, string>;
+  coreSkills?: string[];
+  emergingSkills?: string[];
+  fadingSkills?: string[];
+  tailwinds?: string[];
+  headwinds?: string[];
+  hiring?: string[];
+  hiringCompanies?: string[];
+  snapshot?: string;
+  yourFit?: string;
+  sources?: string[];
+}
+export interface MarketTrends {
+  exists: boolean;
+  researched: string | null;
+  updated: string | null;
+  sources: string[];
+  staleness: "fresh" | "aging" | "stale" | "unknown";
+  tracks: MarketTrack[];
+}

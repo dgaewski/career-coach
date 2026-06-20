@@ -8,6 +8,7 @@ import { applyAppStatus, appendNote } from "./tracker.js";
 import { toggleTodo } from "./todos.js";
 import { addClient } from "./sse.js";
 import { assembleBrief } from "./brief.js";
+import { assembleMarket } from "./market.js";
 
 type Query = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined): string | undefined => (Array.isArray(v) ? v[0] : v);
@@ -112,6 +113,8 @@ export async function buildApp(store: DataStore, wikiRoot: string, onWrite?: () 
     } catch { /* none */ }
     return assembleBrief(store, new Date(), briefCount);
   });
+
+  app.get("/api/market", async () => assembleMarket(store.root, new Date()));
 
   app.get<{ Params: { slug: string } }>("/api/skills/:slug", async (req, reply) => {
     const skills = await store.skills();
