@@ -42,6 +42,14 @@ describe("Companies", () => {
     const link = screen.getByText("Acme").closest("a");
     expect(link?.getAttribute("href")).toBe("/companies/Acme");
   });
+
+  it("shows the stored logo as an img in the row", async () => {
+    mockFetch({ "/api/companies": COMPANIES, "/api/jobs": JOBS });
+    renderAt(<Companies />);
+    await screen.findByText("Acme");
+    const img = screen.getAllByRole("img").find(i => i.getAttribute("src") === "/assets/logos/acme.png");
+    expect(img).toBeTruthy();
+  });
 });
 
 describe("CompanyDetail", () => {
@@ -67,5 +75,20 @@ describe("CompanyDetail", () => {
     // Beta has repeatPoster:true in fixtures — both header signal and scorecard row should show amber text
     const repeatMatches = await screen.findAllByText(/repeat poster/i);
     expect(repeatMatches.length).toBeGreaterThan(0);
+  });
+
+  it("shows HQ, founded, size, industry and a careers link from the company record", async () => {
+    mockFetch({
+      "/api/companies": COMPANIES,
+      "/api/pages/companies/Acme": { title: "Acme", html: "<p>company body</p>" },
+      "/api/jobs": JOBS,
+    });
+    renderAt(<Routes><Route path="/companies/:name" element={<CompanyDetail />} /></Routes>, "/companies/Acme");
+    await screen.findByText("company body");
+    expect(screen.getByText("Boston, MA")).toBeTruthy();
+    expect(screen.getByText("2015")).toBeTruthy();
+    expect(screen.getByText("~1100")).toBeTruthy();
+    const careers = screen.getByRole("link", { name: /careers/i });
+    expect(careers.getAttribute("href")).toBe("https://acme.test/careers");
   });
 });

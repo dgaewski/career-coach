@@ -2,8 +2,10 @@ import Fastify, { type FastifyInstance } from "fastify";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import matter from "gray-matter";
+import fastifyStatic from "@fastify/static";
+import { existsSync } from "node:fs";
 import type { DataStore, JobRecord } from "./store.js";
-import { renderPage } from "./render.js";
+import { renderPage, splitVerbatim } from "./render.js";
 import { applyAppStatus, appendNote } from "./tracker.js";
 import { toggleTodo } from "./todos.js";
 import { addClient } from "./sse.js";
@@ -50,7 +52,10 @@ function applyJobFilters(jobs: JobRecord[], q: Query): JobRecord[] {
 export async function buildApp(store: DataStore, wikiRoot: string, onWrite?: () => void): Promise<FastifyInstance> {
   const app = Fastify({ logger: false });
 
-  void wikiRoot;
+  const logosDir = path.join(wikiRoot, "assets", "logos");
+  if (existsSync(logosDir)) {
+    await app.register(fastifyStatic, { root: logosDir, prefix: "/assets/logos/", decorateReply: false });
+  }
 
   app.get("/api/health", async () => ({ ok: true }));
 
@@ -135,7 +140,11 @@ export async function buildApp(store: DataStore, wikiRoot: string, onWrite?: () 
     try {
       const raw = await readFile(abs, "utf8");
       const { content } = matter(raw);
-      return { ...job, html: renderPage(content) };
+      const { body, posting } = splitVerbatim(content);
+      const extra = posting
+        ? { postingHtml: renderPage(posting), postingCaptured: String(job.fm["ingested"] ?? "").slice(0, 10) }
+        : {};
+      return { ...job, html: renderPage(body), ...extra };
     } catch {
       // File deleted between index and read; the watcher will catch up.
       return reply.code(404).send({ error: "job file not found" });

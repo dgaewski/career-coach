@@ -1,6 +1,6 @@
 ---
 name: setup
-description: One-time onboarding — installs dependencies, reads your résumé, calibrates your search (writes USER.md + profile), finds your first roles, sets up your coach pages and dashboard, and offers a private backup. Run this first in a fresh instance.
+description: One-time onboarding — installs dependencies, reads your résumé, calibrates your search (writes USER.md + profile), finds your first roles, sets up your coach pages, launches your dashboard and teaches the basics, and offers a private backup. Run this first in a fresh instance.
 disable-model-invocation: true
 allowed-tools: Bash, Read, Write, Edit, Glob, Grep, WebSearch, WebFetch
 ---
@@ -69,8 +69,17 @@ Seed the coaching side so the Coach view is useful. (The **Skill Gap Analysis** 
 
 Add any new pages to `index.md`, log the session in `log.md`, and re-run `npm run index` if you wrote pages that affect the dashboard.
 
-## Phase 5 — Open your dashboard
-Tell them how to open it: run `npm run coach` in `tools/`, then open **http://localhost:4280** in a browser. Offer to start it for them in the background; otherwise give them the one command. If they ran a search, point out what's now live (roles on the map, the Morning Brief, the gap analysis, their goals); if they skipped, note it'll fill in once they run `/find-jobs`.
+## Phase 5 — Open your dashboard & learn the basics
+This is the payoff — get the dashboard in front of them, then teach them how to use it.
+
+1. **Launch it for them.** Run the **`/launch`** skill (which starts `npm run coach` in `tools/` in the background, after an index pass, and confirms the port). Don't make them type a command — start it yourself, confirm **http://localhost:4280** is answering, and invite them to open it in their browser.
+2. **Give them a quick guided tour** — a few plain sentences, not a manual. Walk them through what they're looking at, tailored to whether they ran a search:
+   - **Morning Brief** — the top-of-page read: what moved, their best new fits, and what to do next.
+   - **The map & roles** — where the roles are; click one to see fit notes, requirements, and red flags.
+   - **Skill Gap Analysis** — the highest-ROI skills they're missing, ranked — the single most useful view for deciding what to learn next.
+   - **Pipeline / Coach** — their application funnel and goals.
+   - If they **skipped** the search, say plainly that the views fill in the moment they run `/find-jobs`.
+3. **Teach the handful of commands they'll actually use** (keep it to these, in plain language): `/find-jobs` (find more roles), `/launch` (reopen this dashboard anytime), `/status` (a quick text snapshot), `/coach` (talk through strategy), and `/help` (the full list). Mention that the dashboard **hot-reloads** — as they run commands, the views update live without a restart.
 
 ## Phase 6 — Connect to GitHub (updates + optional backup)
 First, **wire engine updates.** Run `git remote -v`:
@@ -83,4 +92,4 @@ Then **offer an optional private backup** of their data. Be explicit: *"This rep
 4. The backup is optional; skipping it still leaves a fully working local instance — and `upstream` is already wired for `/update`.
 
 ## Wrap up
-Tell them what's ready (the dashboard URL; their profile, calibration, roles, and coach pages are saved) and the commands they'll use next: `/find-jobs` for more roles, `/coach` for guidance, `/status` for a snapshot, and `/why` / `/compare` to weigh roles. Keep it short and encouraging.
+Tell them what's ready (their dashboard is live at **http://localhost:4280**; their profile, calibration, roles, and coach pages are saved) and the commands they'll use next: `/launch` to reopen the dashboard next time, `/find-jobs` for more roles, `/coach` for guidance, `/status` for a snapshot, and `/why` / `/compare` to weigh roles. Make sure they know the dashboard server stops when this session ends — `/launch` brings it right back. Keep it short and encouraging.

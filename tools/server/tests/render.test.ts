@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { renderPage } from "../src/render.js";
+import { renderPage, splitVerbatim } from "../src/render.js";
 
 describe("renderPage", () => {
   it("renders markdown to HTML", () => {
@@ -79,5 +79,26 @@ describe("renderPage", () => {
     expect(bad).not.toContain("javascript:");
     const good = renderPage("![logo](https://ok.com/a.png)");
     expect(good).toContain('<img src="https://ok.com/a.png"');
+  });
+});
+
+describe("splitVerbatim", () => {
+  it("returns the whole body and null posting when the section is absent", () => {
+    const { body, posting } = splitVerbatim("## Summary\n\nHello.");
+    expect(body).toBe("## Summary\n\nHello.");
+    expect(posting).toBeNull();
+  });
+
+  it("splits the body from the verbatim section and drops the heading", () => {
+    const md = "## Summary\n\nHello.\n\n## Posting (verbatim)\n\nWe are hiring.\n";
+    const { body, posting } = splitVerbatim(md);
+    expect(body).toBe("## Summary\n\nHello.");
+    expect(posting).toBe("We are hiring.");
+    expect(body).not.toContain("Posting (verbatim)");
+  });
+
+  it("treats an empty verbatim section as null", () => {
+    const { posting } = splitVerbatim("## Summary\n\nHi.\n\n## Posting (verbatim)\n\n");
+    expect(posting).toBeNull();
   });
 });

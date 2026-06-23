@@ -3,7 +3,8 @@ import { useData } from "../hooks/useData.js";
 import type { Company, Job, Page } from "../lib/types.js";
 import { wikilinkClickHandler } from "../lib/wikilinks.js";
 import { Stars, GrowBar } from "../components/primitives.js";
-import { primaryTrack, initials, monoColor } from "../lib/companyUtils.js";
+import { primaryTrack } from "../lib/companyUtils.js";
+import { LogoOrMonogram } from "../components/CompanyLogo.js";
 
 export default function CompanyDetail(): JSX.Element {
   const { name = "" } = useParams();
@@ -55,8 +56,6 @@ export default function CompanyDetail(): JSX.Element {
 
   // Jobs-derived values (used ONLY for Open roles section + track badge)
   const track = primaryTrack(allJobs, decoded);
-  const mc = monoColor(decoded);
-  const inits = initials(decoded);
   const activeRoles = allJobs.filter(j => j.fm.company === decoded && j.fm.status === "active");
 
   // Scorecard values — all from the /api/companies record (Fix 1)
@@ -96,22 +95,7 @@ export default function CompanyDetail(): JSX.Element {
         marginBottom: 24,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <div style={{
-            width: 56, height: 56,
-            borderRadius: 14,
-            background: mc.bg,
-            color: mc.fg,
-            fontFamily: "'JetBrains Mono', monospace",
-            fontWeight: 700,
-            fontSize: 20,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            letterSpacing: ".04em",
-          }}>
-            {inits}
-          </div>
+          <LogoOrMonogram name={decoded} logo={company.logo} size={56} radius={14} fontSize={20} />
           <div>
             <h3 style={{
               fontFamily: "'Newsreader', Georgia, serif",
@@ -122,13 +106,26 @@ export default function CompanyDetail(): JSX.Element {
             }}>
               {decoded}
             </h3>
-            {track && (
-              <div style={{
-                fontSize: 13.5,
-                color: "var(--muted3)",
-                fontFamily: "'JetBrains Mono', monospace",
-              }}>
-                {track}
+            {(() => {
+              const parts = [company.industry, company.hq, company.size, company.founded !== undefined ? `est. ${company.founded}` : undefined].filter(Boolean);
+              return parts.length ? (
+                <div style={{ fontSize: 13.5, color: "var(--muted3)", fontFamily: "'JetBrains Mono', monospace" }}>
+                  {parts.join(" · ")}
+                </div>
+              ) : (track && (
+                <div style={{ fontSize: 13.5, color: "var(--muted3)", fontFamily: "'JetBrains Mono', monospace" }}>{track}</div>
+              ));
+            })()}
+            {(company.domain || company.careersUrl) && (
+              <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                {company.domain && (
+                  <a href={`https://${company.domain}`} target="_blank" rel="noreferrer"
+                    style={{ fontSize: 12.5, color: "var(--accent)", textDecoration: "none" }}>↗ {company.domain}</a>
+                )}
+                {company.careersUrl && (
+                  <a href={company.careersUrl} target="_blank" rel="noreferrer"
+                    style={{ fontSize: 12.5, color: "var(--accent)", textDecoration: "none" }}>↗ Careers</a>
+                )}
               </div>
             )}
           </div>
@@ -249,6 +246,30 @@ export default function CompanyDetail(): JSX.Element {
                 </span>
               </div>
             </div>
+            {company.hq && (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--line5)" }}>
+                <span style={{ fontSize: 13, color: "var(--muted3)" }}>HQ</span>
+                <span style={{ fontSize: 13.5, fontWeight: 500 }}>{company.hq}</span>
+              </div>
+            )}
+            {company.founded !== undefined && (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--line5)" }}>
+                <span style={{ fontSize: 13, color: "var(--muted3)" }}>Founded</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 13.5 }}>{company.founded}</span>
+              </div>
+            )}
+            {company.size && (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--line5)" }}>
+                <span style={{ fontSize: 13, color: "var(--muted3)" }}>Size</span>
+                <span style={{ fontSize: 13.5, fontWeight: 500 }}>{company.size}</span>
+              </div>
+            )}
+            {company.industry && (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--line5)" }}>
+                <span style={{ fontSize: 13, color: "var(--muted3)" }}>Industry</span>
+                <span style={{ fontSize: 13.5, fontWeight: 500 }}>{company.industry}</span>
+              </div>
+            )}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0" }}>
               <span style={{ fontSize: 13, color: "var(--muted3)" }}>Signal</span>
               {isRepeat

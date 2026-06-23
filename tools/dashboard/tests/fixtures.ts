@@ -36,7 +36,7 @@ export const SKILLS = [
 ];
 export const GAP = [{ slug: "ros2", name: "ROS 2", count: 1, share: 0.5, trend: "rising", roi: 100, closedBy: ["Arm Migration"] }];
 export const COMPANIES = [
-  { name: "Acme", active: 1, total: 1, avgSalary: 110000, remoteShare: 0,   levels: { early: 1 }, repeatPoster: false },
+  { name: "Acme", active: 1, total: 1, avgSalary: 110000, remoteShare: 0, levels: { early: 1 }, repeatPoster: false, logo: "assets/logos/acme.png", hq: "Boston, MA", industry: "robotics", size: "~1100", founded: 2015, domain: "acme.test", careersUrl: "https://acme.test/careers" },
   { name: "Beta", active: 2, total: 5, avgSalary: 90000,  remoteShare: 0.5, levels: { entry: 2 }, repeatPoster: true  },
 ];
 export const MAPDATA = {
@@ -45,7 +45,7 @@ export const MAPDATA = {
 };
 export const TIMELINE = [{ month: "2026-06", interested: 0, applied: 1, interview: 0, offer: 0, rejected: 1 }];
 export const ERRORS = [{ file: "jobs/Broken.md", reason: "bad frontmatter" }];
-export const JOB_DETAIL = { ...JOB_A, html: "<h2>About the role</h2><p>Build robots.</p>" };
+export const JOB_DETAIL = { ...JOB_A, fm: { ...JOB_A.fm, deadline: "2026-07-15" }, html: "<h2>About the role</h2><p>Build robots.</p>", postingHtml: "<p>VERBATIM: We are hiring a robot dev.</p>", postingCaptured: "2026-06-01" };
 export const KEYWORDS = [{ term: "perception", count: 3 }, { term: "autonomy", count: 1 }];
 export const SKILL_DETAIL = { ...SKILLS[0], jobs: JOBS };   // ros2 detail with jobs
 export const PROFILE_PAGE = { title: "Profile", html: "<h2>Who I am</h2><p>ECE engineer pivoting to robotics.</p>" };

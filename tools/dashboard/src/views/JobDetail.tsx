@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { useData } from "../hooks/useData.js";
 import type { JobDetail as JobDetailT, LinksMap, Summary } from "../lib/types.js";
@@ -46,6 +47,7 @@ export default function JobDetail(): JSX.Element {
   const { data: job, error, loading, reload } = useData<JobDetailT>(`/api/jobs/${id}`);
   const { data: summary } = useData<Summary>("/api/summary");
   const links = useData<LinksMap>("/api/links");
+  const [showPosting, setShowPosting] = useState(false);
 
   if (loading) return <p className="muted" style={{ padding: "32px 0" }}>Loading…</p>;
   if (error || !job) {
@@ -209,12 +211,36 @@ export default function JobDetail(): JSX.Element {
       {/* Body + Facts sidebar: 1.7fr / 1fr */}
       <div style={{ display: "grid", gridTemplateColumns: "1.7fr 1fr", gap: 20, alignItems: "start" }}>
         {/* Body panel — bg2, Newsreader subheads */}
-        <div
-          className="rendered"
-          style={{ background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: 16, padding: "28px 30px" }}
-          onClick={wikilinkClickHandler(navigate)}
-          dangerouslySetInnerHTML={{ __html: job.html }}
-        />
+        <div>
+          <div
+            className="rendered"
+            style={{ background: "var(--bg2)", border: "1px solid var(--line)", borderRadius: 16, padding: "28px 30px" }}
+            onClick={wikilinkClickHandler(navigate)}
+            dangerouslySetInnerHTML={{ __html: job.html }}
+          />
+          {job.postingHtml && (
+            <div style={{ marginTop: 16, border: "1px solid var(--line)", borderRadius: 14, overflow: "hidden", background: "var(--card)" }}>
+              <button
+                onClick={() => setShowPosting(v => !v)}
+                style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, padding: "14px 18px", background: "none", border: "none", cursor: "pointer", fontFamily: "inherit", textAlign: "left" }}
+              >
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontSize: 12, letterSpacing: ".05em", textTransform: "uppercase", color: "var(--muted3)" }}>
+                  {showPosting ? "▾" : "▸"} Original posting (verbatim)
+                </span>
+                <span style={{ fontSize: 12, color: "var(--muted3)" }}>
+                  captured {job.postingCaptured ?? "—"} · may be outdated
+                </span>
+              </button>
+              {showPosting && (
+                <div
+                  className="rendered"
+                  style={{ borderTop: "1px solid var(--line5)", background: "var(--bg2)", padding: "22px 24px" }}
+                  dangerouslySetInnerHTML={{ __html: job.postingHtml }}
+                />
+              )}
+            </div>
+          )}
+        </div>
 
         {/* Facts sidebar */}
         <div style={{ background: "var(--card)", border: "1px solid var(--line)", borderRadius: 16, padding: 22 }}>
@@ -234,6 +260,14 @@ export default function JobDetail(): JSX.Element {
                 {job.fm.salary ?? "unverified"}
               </span>
             </div>
+            {job.fm.deadline ? (
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--line5)" }}>
+                <span style={{ fontSize: 13, color: "var(--muted3)" }}>Deadline</span>
+                <span style={{ fontFamily: "'JetBrains Mono', monospace", fontWeight: 700, fontSize: 13, color: "var(--amber-fg, #B86A00)" }}>
+                  {String(job.fm.deadline).slice(0, 10)}
+                </span>
+              </div>
+            ) : null}
             {/* Freshness */}
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 0", borderBottom: "1px solid var(--line5)" }}>
               <span style={{ fontSize: 13, color: "var(--muted3)" }}>Freshness</span>

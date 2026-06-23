@@ -17,7 +17,7 @@ export interface Job {
   fit: { score: number; tier: FitTier; reasons: string[]; matched: number; flags?: string[] };
   freshness: Freshness; salaryMidpoint: number | null;
 }
-export type JobDetail = Job & { html: string };
+export type JobDetail = Job & { html: string; postingHtml?: string; postingCaptured?: string };
 
 export interface Skill {
   slug: string; name: string; have: boolean; count: number; share: number; tier: DemandTier;
@@ -27,7 +27,12 @@ export interface Skill {
 export type SkillDetail = Skill & { jobs: Job[] };
 
 export interface GapEntry { slug: string; name: string; count: number; share: number; trend: Trend; roi: number; closedBy: string[]; byTrack?: Record<string, { count: number; share: number; roi: number }> }
-export interface Company { name: string; active: number; total: number; avgSalary: number | null; remoteShare: number; levels: Record<string, number>; repeatPoster: boolean }
+export interface Company {
+  name: string; active: number; total: number; avgSalary: number | null;
+  remoteShare: number; levels: Record<string, number>; repeatPoster: boolean;
+  hq?: string; industry?: string; size?: string; careersUrl?: string;
+  domain?: string; founded?: number; logo?: string | null;
+}
 export interface MapPlace { place: string; lat: number; lng: number; count: number; jobs: string[] }
 export interface MapData { places: MapPlace[]; remoteCount: number; otherCount: number; warnings: string[] }
 export interface TimelineMonth { month: string; interested: number; applied: number; interview: number; offer: number; rejected: number }

@@ -20,6 +20,7 @@ Follow "Workflow: Manual drop" in `CLAUDE.md`:
 - **Preserve the raw text first** under `raw-sources/postings/` (git-ignored; never committed).
 - **Dedup** against their `jobs/` — if it's already there (or a repost), note it on the existing page rather than duplicating.
 - Author the job page (valid frontmatter; non-empty `## Fit notes` specific to this person), create/update the company page, and create any missing skill pages.
+- **Capture the verbatim posting** into a `## Posting (verbatim)` section (boilerplate trimmed); add `deadline:` when shown. For a new company, fill `hq`/`founded`/`size`/`domain`, write a verbatim sourced `## About`, and download the logo to `assets/logos/<slug>.<ext>`.
 - **Slugs exact** (the skill page's `slug:`, not its title); soft terms in `keywords:`. Add a non-remote city to `geo/places.json`.
 - Update `index.md` + `log.md`.
 

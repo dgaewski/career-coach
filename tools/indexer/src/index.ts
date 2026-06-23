@@ -1,6 +1,6 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { writeFile, mkdir, readFile } from "node:fs/promises";
+import { writeFile, mkdir, readFile, readdir } from "node:fs/promises";
 import { loadConfig, loadPlaces } from "./config.js";
 import { loadUser } from "./user.js";
 import { scanWiki } from "./scan.js";
@@ -82,7 +82,9 @@ export async function runIndexer(root: string, now: Date): Promise<void> {
   const trackTotals: Record<string, number> = {};
   for (const j of scan.jobs) if (j.fm.status === "active") for (const t of j.fm.track) trackTotals[t] = (trackTotals[t] ?? 0) + 1;
   const gaps = computeGap(stats, scan.projects, cfg.keywordWeight, trackTotals, user.pivot?.into ?? [], cfg.pivotBoost ?? 1.2);
-  const companies = computeCompanies(scan.jobs);
+  let logoFiles: string[] = [];
+  try { logoFiles = await readdir(path.join(root, "assets", "logos")); } catch { /* none yet */ }
+  const companies = computeCompanies(scan.jobs, scan.companies, logoFiles);
   const map = computeMap(scan.jobs, places, zoneSlugs);
   const timeline = computeTimeline(scan.jobs);
   const salWarnings = salaryWarnings(

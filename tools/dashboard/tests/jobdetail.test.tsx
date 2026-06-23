@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, it, expect } from "vitest";
-import { screen } from "@testing-library/react";
+import { screen, fireEvent } from "@testing-library/react";
 import { Route, Routes } from "react-router-dom";
 import JobDetail from "../src/views/JobDetail.js";
 import { renderAt, mockFetch } from "./helpers.js";
@@ -66,6 +66,23 @@ describe("JobDetail", () => {
     );
     const link = await screen.findByRole("link", { name: /careers page/i });
     expect(link.getAttribute("href")).toBe("https://co.com/careers");
+  });
+
+  it("shows a collapsed verbatim posting toggle that expands on click", async () => {
+    mockFetch({ "/api/jobs/acme-robot-dev": JOB_DETAIL, "/api/summary": SUMMARY, "/api/links": {} });
+    renderAt(<Routes><Route path="/jobs/:id" element={<JobDetail />} /></Routes>, "/jobs/acme-robot-dev");
+    const toggle = await screen.findByRole("button", { name: /original posting/i });
+    expect(screen.queryByText(/VERBATIM/)).toBeNull();   // collapsed by default
+    fireEvent.click(toggle);
+    expect(screen.getByText(/VERBATIM/)).toBeTruthy();    // revealed
+  });
+
+  it("shows the application deadline in the facts panel", async () => {
+    mockFetch({ "/api/jobs/acme-robot-dev": JOB_DETAIL, "/api/summary": SUMMARY, "/api/links": {} });
+    renderAt(<Routes><Route path="/jobs/:id" element={<JobDetail />} /></Routes>, "/jobs/acme-robot-dev");
+    await screen.findByText("Robot Dev");
+    expect(screen.getByText("Deadline")).toBeTruthy();
+    expect(screen.getByText("2026-07-15")).toBeTruthy();
   });
 
   it("apply button falls back when the canonical url is dead (404), not just empty", async () => {

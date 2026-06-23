@@ -7,17 +7,44 @@ import { fileURLToPath } from "node:url";
 const DIR = path.dirname(fileURLToPath(import.meta.url));
 const DATA = path.join(DIR, "..", "data");
 
+const GENERIC_CAREERS_PATHS = new Set([
+  "", "/careers", "/career", "/jobs", "/en/careers",
+  "/open-roles", "/join/roles", "/roles", "/openings", "/positions", "/search",
+]);
+
 export function isGenericCareers(url) {
   try {
     const u = new URL(url);
     const p = u.pathname.replace(/\/+$/, "").toLowerCase();
-    return p === "" || p === "/careers" || p === "/jobs" || p === "/career" || p === "/en/careers";
+    return GENERIC_CAREERS_PATHS.has(p);
+  } catch { return false; }
+}
+
+// A soft-404: the requested URL pointed at a specific posting (a deep path with
+// an id-like last segment) but the 200 response came from a different URL that
+// dropped that identifier — i.e. the ATS redirected a closed listing to a board
+// or landing. Also catches the explicit `?error=true` marker (Greenhouse).
+// Errs toward "not redirected" (live) on ambiguity, to avoid hiding live roles.
+export function redirectedAwayFromPosting(requestedUrl, finalUrl) {
+  try {
+    const req = new URL(requestedUrl);
+    const fin = new URL(finalUrl);
+    if (fin.searchParams.has("error")) return true;              // e.g. greenhouse ?error=true
+    const segs = req.pathname.split("/").filter(Boolean);
+    if (segs.length < 2) return false;                           // not a deep posting path → can't tell
+    const id = segs[segs.length - 1].toLowerCase();
+    if (id.length < 3) return false;                             // too short to match reliably
+    const finalHay = (fin.pathname + fin.search).toLowerCase();
+    return !finalHay.includes(id);                              // final lost the posting id → redirected away
   } catch { return false; }
 }
 
 export function classifyStatus(httpStatus, requestedUrl, finalUrl) {
   if (httpStatus >= 200 && httpStatus < 300) {
-    if (finalUrl && requestedUrl && isGenericCareers(finalUrl) && !isGenericCareers(requestedUrl)) return "redirected";
+    if (finalUrl && requestedUrl) {
+      if (isGenericCareers(finalUrl) && !isGenericCareers(requestedUrl)) return "redirected";
+      if (redirectedAwayFromPosting(requestedUrl, finalUrl)) return "redirected";  // soft-404
+    }
     return "live";
   }
   if (httpStatus === 404 || httpStatus === 410) return "dead";   // genuinely gone

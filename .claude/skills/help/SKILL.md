@@ -16,6 +16,7 @@ You are running **/help**. List the available commands in plain language, groupe
 - `/watch <category> <cadence>` — schedule a recurring search, e.g. `/watch robotics weekly`.
 
 **Understanding & deciding**
+- `/launch` — start your local dashboard at http://localhost:4280 (hot-reloads as your pages change).
 - `/status` — a quick snapshot of your pipeline, new fits, and top gaps.
 - `/coach [topic]` — talk through strategy, priorities, gaps, applications, negotiation.
 - `/why <job>` — why a specific role scored the way it did (your matching skills, gaps, flags).
@@ -25,6 +26,7 @@ You are running **/help**. List the available commands in plain language, groupe
 **Keeping things current**
 - `/update-resume` — refresh your profile from a new résumé.
 - `/lint` — health-check your wiki (contradictions, stale advice, broken links).
+- `/enrich [company or job name]` — backfill richer job/company info (verbatim postings, company description/HQ/founded/domain/logo) on existing pages.
 - `/backup` — save your data to your private GitHub repo.
 - `/update` — pull the latest engine improvements from the template.
 

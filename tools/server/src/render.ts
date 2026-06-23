@@ -85,3 +85,16 @@ export function renderPage(markdown: string): string {
   // Wikilinks are handled by the inline extension at token level.
   return marked.parse(markdown, { async: false }) as string;
 }
+
+/**
+ * Split a job body into the synthesized part and the verbatim posting section.
+ * The "## Posting (verbatim)" heading is dropped from both outputs; the dashboard
+ * renders its own labeled, collapsible container for the posting.
+ */
+export function splitVerbatim(markdown: string): { body: string; posting: string | null } {
+  const m = markdown.match(/^##[ \t]+Posting \(verbatim\)[ \t]*$/m);
+  if (!m || m.index === undefined) return { body: markdown, posting: null };
+  const body = markdown.slice(0, m.index).trimEnd();
+  const posting = markdown.slice(m.index + m[0].length).trim();
+  return { body, posting: posting || null };
+}

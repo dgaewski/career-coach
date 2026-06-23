@@ -3,7 +3,8 @@ import { Link } from "react-router-dom";
 import { useData } from "../hooks/useData.js";
 import { GrowBar, Chip } from "../components/primitives.js";
 import type { Company, Job } from "../lib/types.js";
-import { primaryTrack, initials, monoColor } from "../lib/companyUtils.js";
+import { primaryTrack } from "../lib/companyUtils.js";
+import { LogoOrMonogram } from "../components/CompanyLogo.js";
 
 type SortKey = "active" | "total" | "avgSalary" | "remoteShare";
 
@@ -140,8 +141,6 @@ export default function Companies(): JSX.Element {
         {/* Data rows */}
         {rows.map(c => {
           const track = primaryTrack(allJobs, c.name);
-          const mc = monoColor(c.name);
-          const inits = initials(c.name);
           const salaryLabel = c.avgSalary !== null ? `$${c.avgSalary.toLocaleString()}` : "—";
           const remotePct = Math.round(c.remoteShare * 100);
 
@@ -167,22 +166,7 @@ export default function Companies(): JSX.Element {
             >
               {/* Employer cell */}
               <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                <div style={{
-                  width: 36, height: 36,
-                  borderRadius: 9,
-                  background: mc.bg,
-                  color: mc.fg,
-                  fontFamily: "'JetBrains Mono', monospace",
-                  fontWeight: 700,
-                  fontSize: 13,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  flexShrink: 0,
-                  letterSpacing: ".04em",
-                }}>
-                  {inits}
-                </div>
+                <LogoOrMonogram name={c.name} logo={c.logo} size={36} radius={9} fontSize={13} />
                 <div style={{ minWidth: 0 }}>
                   <div style={{
                     fontWeight: 600,

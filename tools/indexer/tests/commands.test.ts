@@ -23,6 +23,7 @@ const commands: { name: string; args: boolean }[] = [
   { name: "backup", args: false },
   { name: "help", args: false },
   { name: "watch", args: true },
+  { name: "enrich", args: true },
   { name: "update", args: false },
   { name: "market-trends", args: false },
 ];

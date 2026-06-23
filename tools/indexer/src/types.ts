@@ -58,7 +58,7 @@ export interface SkillFM {
   have: boolean; evidence?: string;
 }
 
-export interface CompanyFM { type: "company"; hq?: string; industry?: string; "careers-url"?: string }
+export interface CompanyFM { type: "company"; hq?: string; industry?: string; size?: string; "careers-url"?: string; domain?: string; founded?: number }
 export interface ProjectFM { type: "project"; status: string; closes: string[]; repo?: string }
 
 export interface Doc<F> { file: string; name: string; fm: F; body: string }
@@ -91,6 +91,8 @@ export interface GapEntry {
 export interface CompanyStats {
   name: string; active: number; total: number; avgSalary: number | null;
   remoteShare: number; levels: Record<string, number>; repeatPoster: boolean;
+  hq?: string; industry?: string; size?: string; careersUrl?: string;
+  domain?: string; founded?: number; logo: string | null;
 }
 
 export interface MapPlace { place: string; lat: number; lng: number; count: number; jobs: string[] }

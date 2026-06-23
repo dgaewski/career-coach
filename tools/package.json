@@ -10,7 +10,10 @@
     "typecheck": "tsc --noEmit -p tsconfig.json && tsc --noEmit -p dashboard/tsconfig.json",
     "dash": "vite --config dashboard/vite.config.ts",
     "dash:build": "vite build --config dashboard/vite.config.ts",
-    "checklinks": "node checklinks.mjs"
+    "checklinks": "node checklinks.mjs",
+    "harvest": "node harvest.mjs",
+    "checkurl": "node checkurl.mjs",
+    "known": "node known.mjs"
   },
   "dependencies": {
     "@fastify/static": "^8.3.0",
