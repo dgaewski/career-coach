@@ -6,6 +6,7 @@ import { DataStore } from "./store.js";
 import { resolveWikiRoot } from "./paths.js";
 import { makeReindexScheduler, startWatcher } from "./watch.js";
 import { broadcast, closeAllClients } from "./sse.js";
+import { dashboardState, buildDashboard } from "./dashboard.js";
 import fastifyStatic from "@fastify/static";
 import { existsSync } from "node:fs";
 
@@ -43,6 +44,21 @@ async function main(): Promise<void> {
   };
   process.on("SIGINT", shutdown);
   process.on("SIGTERM", shutdown);
+
+  // Self-heal a missing or stale bundle on boot: serving an old bundle against
+  // freshly-indexed data (whose shape may have changed) crashes the UI. Rebuild
+  // is best-effort — if it fails we still serve whatever bundle exists.
+  const state = dashboardState(root);
+  if (state !== "fresh") {
+    try {
+      console.log(`[coach] dashboard bundle ${state} — rebuilding (npm run dash:build)…`);
+      buildDashboard(root);
+      console.log("[coach] dashboard rebuilt.");
+    } catch (e) {
+      console.error(`[coach] dashboard rebuild failed (${e instanceof Error ? e.message : e}) — `
+        + "serving the existing bundle if present; run `npm run dash:build` manually.");
+    }
+  }
 
   const dist = path.join(root, "tools", "dashboard", "dist");
   if (existsSync(dist)) {

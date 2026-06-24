@@ -13,6 +13,29 @@ function resolveLogo(name: string, logoFiles: string[]): string | null {
   return null;
 }
 
+/**
+ * Lint: company pages missing inline enrichment — a logo file or a `## About`
+ * section. find-jobs/enrich are supposed to fill these as pages are created;
+ * this surfaces gaps (one actionable line per company) so they don't silently
+ * pile up and force a later sweep.
+ */
+export function companyEnrichmentWarnings(
+  companyDocs: Doc<CompanyFM>[],
+  logoFiles: string[] = [],
+): string[] {
+  const out: string[] = [];
+  for (const doc of companyDocs) {
+    // Confidential/undisclosed employers can't have a sourced logo or About —
+    // flagging them every run is permanent, un-actionable noise.
+    if (/confidential|undisclosed|stealth/i.test(doc.name)) continue;
+    const missing: string[] = [];
+    if (!resolveLogo(doc.name, logoFiles)) missing.push("logo");
+    if (!/##\s*About\s*\n+\s*\S/.test(doc.body)) missing.push("## About");
+    if (missing.length) out.push(`company enrichment: ${doc.name} missing ${missing.join(" + ")} — run /enrich ${doc.name}`);
+  }
+  return out;
+}
+
 export function computeCompanies(
   jobs: Doc<JobFM>[],
   companyDocs: Doc<CompanyFM>[] = [],

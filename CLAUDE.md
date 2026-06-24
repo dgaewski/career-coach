@@ -142,7 +142,7 @@ New resume → versioned into `raw-sources/`, re-synthesize `Profile.md` (bump `
 
 ## Workflow: Lint
 
-LLM lint: contradictions; advice/Market-Trends `researched:` > 6 months; orphan pages; missing cross-links; duplicate company name variants; dead-link spot checks; `have:` flags contradicting Profile; mentioned-but-unwritten pages. Findings → `log.md` under `lint YYYY-MM-DD`. (Deterministic checks — salary sanity, alias collisions, empty Fit notes, unresolvable slugs — are the indexer's job from Phase 3.)
+LLM lint: contradictions; advice/Market-Trends `researched:` > 6 months; orphan pages; missing cross-links; duplicate company name variants; dead-link spot checks; `have:` flags contradicting Profile; mentioned-but-unwritten pages. Findings → `log.md` under `lint YYYY-MM-DD`. (Deterministic checks — salary sanity, alias collisions, empty Fit notes, unresolvable slugs, and company-enrichment gaps (a company page missing a logo file or `## About`; confidential/undisclosed employers exempted) — are the indexer's job from Phase 3, surfaced in `data/meta.json` `warnings`.)
 
 ## Per-page ingest checklist (run mentally before saving any job page)
 

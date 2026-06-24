@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { computeCompanies } from "../src/companies.js";
+import { computeCompanies, companyEnrichmentWarnings } from "../src/companies.js";
 import type { Doc, JobFM, CompanyFM } from "../src/types.js";
 
 function job(company: string, over: Partial<JobFM>): Doc<JobFM> {
@@ -55,5 +55,34 @@ describe("computeCompanies enrichment", () => {
   it("matches the first logo extension available", () => {
     const out = computeCompanies([job("Beta", {})], [], ["beta.svg"]);
     expect(out.find(c => c.name === "Beta")!.logo).toBe("assets/logos/beta.svg");
+  });
+});
+
+describe("companyEnrichmentWarnings", () => {
+  const withAbout = (name: string): Doc<CompanyFM> =>
+    ({ file: "c", name, body: "## About\n> a sourced blurb", fm: { type: "company" } as CompanyFM });
+
+  it("flags a company missing both a logo and ## About", () => {
+    const out = companyEnrichmentWarnings([cdoc("Acme", {})], []);
+    expect(out).toEqual(["company enrichment: Acme missing logo + ## About — run /enrich Acme"]);
+  });
+
+  it("flags only the missing piece (logo present, About absent)", () => {
+    const out = companyEnrichmentWarnings([cdoc("Acme", {})], ["acme.png"]);
+    expect(out).toEqual(["company enrichment: Acme missing ## About — run /enrich Acme"]);
+  });
+
+  it("flags only the missing piece (About present, logo absent)", () => {
+    const out = companyEnrichmentWarnings([withAbout("Acme")], []);
+    expect(out).toEqual(["company enrichment: Acme missing logo — run /enrich Acme"]);
+  });
+
+  it("stays quiet when a company has both a logo and ## About", () => {
+    expect(companyEnrichmentWarnings([withAbout("Acme")], ["acme.png"])).toEqual([]);
+  });
+
+  it("exempts confidential/undisclosed/stealth placeholders (un-enrichable)", () => {
+    const docs = [cdoc("Confidential (Rocky Hill manufacturer)", {}), cdoc("Undisclosed Startup", {}), cdoc("Stealth Robotics Co", {})];
+    expect(companyEnrichmentWarnings(docs, [])).toEqual([]);
   });
 });

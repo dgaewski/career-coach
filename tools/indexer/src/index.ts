@@ -10,7 +10,7 @@ import { computeSkillDemand } from "./counts.js";
 import { computeMomentum } from "./momentum.js";
 import { computeFit, freshness } from "./fit.js";
 import { computeGap } from "./gap.js";
-import { computeCompanies } from "./companies.js";
+import { computeCompanies, companyEnrichmentWarnings } from "./companies.js";
 import { computeMap } from "./mapdata.js";
 import { computeTimeline } from "./timeline.js";
 import { parseSalaryMidpoint, salaryWarnings } from "./salary.js";
@@ -85,6 +85,7 @@ export async function runIndexer(root: string, now: Date): Promise<void> {
   let logoFiles: string[] = [];
   try { logoFiles = await readdir(path.join(root, "assets", "logos")); } catch { /* none yet */ }
   const companies = computeCompanies(scan.jobs, scan.companies, logoFiles);
+  const companyWarnings = companyEnrichmentWarnings(scan.companies, logoFiles);
   const map = computeMap(scan.jobs, places, zoneSlugs);
   const timeline = computeTimeline(scan.jobs);
   const salWarnings = salaryWarnings(
@@ -96,7 +97,7 @@ export async function runIndexer(root: string, now: Date): Promise<void> {
   const geoWarnings = scan.jobs
     .filter(j => j.fm.status === "active" && !validGeos.has(j.fm.geo))
     .map(j => `geo "${j.fm.geo}" not a defined zone: ${path.basename(j.file)}`);
-  warnings.push(...map.warnings, ...salWarnings, ...emptyFitNotes, ...geoWarnings);
+  warnings.push(...map.warnings, ...salWarnings, ...emptyFitNotes, ...geoWarnings, ...companyWarnings);
 
   const dataDir = path.join(root, "data");
   let prior: Snapshot = {};
